@@ -8,6 +8,9 @@ out-tsc
 # dependencies
 node_modules
 
+# db
+mysql
+
 # IDEs and editors
 /.idea
 .project
