@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VehiclesModule } from '../vehicles/vehicles.module';
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
+import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
 
 @Module({
   imports: [
@@ -14,12 +13,12 @@ import { Vehicle } from '../vehicles/entities/vehicle.entity';
       username: 'root',
       password: 'root',
       database: 'car_rental',
-      entities: [Vehicle],
+      entities: [Vehicle, VehicleBrand],
       synchronize: true,
     }),
     VehiclesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

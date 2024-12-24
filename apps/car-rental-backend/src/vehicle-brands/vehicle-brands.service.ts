@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVehicleBrandDto } from './dto/create-vehicle-brand.dto';
 import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +12,15 @@ export class VehicleBrandsService {
     private vehicleBrandsRepository: Repository<VehicleBrand>
   ) {}
 
-  create(createVehicleBrandDto: CreateVehicleBrandDto) {
+  async create(createVehicleBrandDto: CreateVehicleBrandDto) {
+    const { name } = createVehicleBrandDto;
+    const vehicleBrand = await this.findByName(name);
+    if (vehicleBrand) {
+      throw new HttpException(
+        { status: HttpStatus.CONFLICT, error: 'Vehicle brand already exists' },
+        HttpStatus.CONFLICT
+      );
+    }
     return this.vehicleBrandsRepository.save(createVehicleBrandDto);
   }
 
@@ -22,6 +30,10 @@ export class VehicleBrandsService {
 
   findOne(id: number) {
     return this.vehicleBrandsRepository.findOneBy({ id });
+  }
+
+  findByName(name: string) {
+    return this.vehicleBrandsRepository.findOneBy({ name });
   }
 
   update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
