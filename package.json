@@ -49,7 +49,7 @@
     "@nx/devkit": "20.3.0",
     "@nx/eslint": "20.3.0",
     "@nx/eslint-plugin": "20.3.0",
-    "@nx/jest": "20.3.0",
+    "@nx/jest": "^20.3.0",
     "@nx/js": "20.3.0",
     "@nx/nest": "^20.3.0",
     "@nx/node": "20.3.0",

@@ -67,6 +67,13 @@
         "serveTargetName": "serve",
         "previewTargetName": "preview"
       }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "exclude": ["e2e/**/*"],
+      "options": {
+        "targetName": "test"
+      }
     }
   ],
   "generators": {
