@@ -16,12 +16,16 @@ import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
 import { ApiPaginatedResponse } from '../common/decorators/api-paginated-response.decorator';
 import { VehicleBrandDto } from './dto/vehicle-brand.dto';
+import { ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('vehicle-brands')
 export class VehicleBrandsController {
   constructor(private readonly vehicleBrandsService: VehicleBrandsService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOkResponse({ type: VehicleBrandDto })
+  @ApiConflictResponse({ description: 'Vehicle brand already exists' })
   create(@Body() createVehicleBrandDto: CreateVehicleBrandDto) {
     return this.vehicleBrandsService.create(createVehicleBrandDto);
   }
@@ -34,20 +38,29 @@ export class VehicleBrandsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vehicleBrandsService.findOne(+id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: VehicleBrandDto })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
+  findOne(@Param('id') id: number) {
+    return this.vehicleBrandsService.findOne(id);
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: VehicleBrandDto })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateVehicleBrandDto: UpdateVehicleBrandDto
   ) {
-    return this.vehicleBrandsService.update(+id, updateVehicleBrandDto);
+    return this.vehicleBrandsService.update(id, updateVehicleBrandDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vehicleBrandsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'Vehicle brand removed' })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
+  remove(@Param('id') id: number) {
+    return this.vehicleBrandsService.remove(id);
   }
 }

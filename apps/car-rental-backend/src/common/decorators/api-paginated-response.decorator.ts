@@ -14,7 +14,18 @@ export const ApiPaginatedResponse = <TModel extends Type<unknown>>(
           { $ref: getSchemaPath(PageDto) },
           {
             properties: {
-              results: {
+              meta: {
+                type: 'object',
+                properties: {
+                  itemCount: { type: 'number', example: 1 },
+                  pageCount: { type: 'number', example: 1 },
+                  page: { type: 'number', example: 1 },
+                  take: { type: 'number', example: 1 },
+                  hasPreviousPage: { type: 'boolean', example: false },
+                  hasNextPage: { type: 'boolean', example: false},
+                },
+              },
+              data: {
                 type: 'array',
                 items: { $ref: getSchemaPath(model) },
               },

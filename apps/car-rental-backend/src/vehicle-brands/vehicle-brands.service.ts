@@ -38,19 +38,47 @@ export class VehicleBrandsService {
     return new PageDto(entities, pageMetaDto);
   }
 
-  findOne(id: number) {
-    return this.vehicleBrandsRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
+    if (!vehicle) {
+      throw new HttpException(
+        { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return vehicle;
   }
 
-  findByName(name: string) {
-    return this.vehicleBrandsRepository.findOneBy({ name });
+  async findByName(name: string) {
+    const vehicle = await this.vehicleBrandsRepository.findOneBy({ name });
+    if (!vehicle) {
+      throw new HttpException(
+        { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return vehicle;
   }
 
-  update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
+  async update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
+    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
+    if (!vehicle) {
+      throw new HttpException(
+        { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
+        HttpStatus.NOT_FOUND
+      );
+    }
     return this.vehicleBrandsRepository.update(id, updateVehicleBrandDto);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
+    if (!vehicle) {
+      throw new HttpException(
+        { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
+        HttpStatus.NOT_FOUND
+      );
+    }
     return this.vehicleBrandsRepository.delete(id);
   }
 }

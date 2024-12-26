@@ -1,5 +1,5 @@
-import { CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { PrimaryGeneratedColumn } from 'typeorm/decorator/columns/PrimaryGeneratedColumn';
 
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn()
