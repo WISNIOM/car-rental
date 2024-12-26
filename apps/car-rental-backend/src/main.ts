@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
@@ -8,6 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder().setTitle('Car Rental API').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   const globalPrefix = 'api';
+  app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
   SwaggerModule.setup('api', app, documentFactory);
