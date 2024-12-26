@@ -1,19 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VehicleBrandsController } from './vehicle-brands.controller';
 import { VehicleBrandsService } from './vehicle-brands.service';
+import { PageDto } from '../common/pages/dto/page.dto';
+import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
 import { CreateVehicleBrandDto } from './dto/create-vehicle-brand.dto';
 import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
-
-const mockVehicleBrandsService = {
-  create: jest.fn(),
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-};
+import { VehicleBrandDto } from './dto/vehicle-brand.dto';
 
 describe('VehicleBrandsController', () => {
   let controller: VehicleBrandsController;
+  let service: VehicleBrandsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,12 +17,18 @@ describe('VehicleBrandsController', () => {
       providers: [
         {
           provide: VehicleBrandsService,
-          useValue: mockVehicleBrandsService,
+          useValue: {
+            create: jest.fn(),
+            findVehicleBrands: jest.fn(),
+            findOne: jest.fn(),
+            update: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     controller = module.get<VehicleBrandsController>(VehicleBrandsController);
+    service = module.get<VehicleBrandsService>(VehicleBrandsService);
   });
 
   it('should be defined', () => {
@@ -34,61 +36,53 @@ describe('VehicleBrandsController', () => {
   });
 
   describe('create', () => {
-    it('should create a new vehicle brand', async () => {
+    it('should call service.create with correct parameters', async () => {
       const createVehicleBrandDto: CreateVehicleBrandDto = { name: 'Toyota' };
-      mockVehicleBrandsService.create.mockResolvedValue(createVehicleBrandDto);
+      const result = new VehicleBrandDto();
+      jest.spyOn(service, 'create').mockResolvedValue(result);
 
-      expect(await controller.create(createVehicleBrandDto)).toEqual(
-        createVehicleBrandDto
-      );
-      expect(mockVehicleBrandsService.create).toHaveBeenCalledWith(
-        createVehicleBrandDto
-      );
+      expect(await controller.create(createVehicleBrandDto)).toBe(result);
+      expect(service.create).toHaveBeenCalledWith(createVehicleBrandDto);
     });
   });
 
-  describe('findAll', () => {
-    it('should return an array of vehicle brands', async () => {
-      const result = [{ id: 1, name: 'Toyota' }];
-      mockVehicleBrandsService.findAll.mockResolvedValue(result);
+  describe('findVehicleBrands', () => {
+    it('should call service.findVehicleBrands with correct parameters', async () => {
+      const pageOptionsDto: PageOptionsDto = {
+        page: 1,
+        take: 10,
+        skip: 0,
+      };
+      const result = { data: [], meta: {} };
+      jest
+        .spyOn(service, 'findVehicleBrands')
+        .mockResolvedValue(result as PageDto<VehicleBrandDto>);
 
-      expect(await controller.findAll()).toEqual(result);
+      expect(await controller.findVehicleBrands(pageOptionsDto)).toBe(result);
+      expect(service.findVehicleBrands).toHaveBeenCalledWith(pageOptionsDto);
     });
   });
 
   describe('findOne', () => {
-    it('should return a vehicle brand by id', async () => {
-      const result = { id: 1, name: 'Toyota' };
-      mockVehicleBrandsService.findOne.mockResolvedValue(result);
+    it('should call service.findOne with correct parameters', async () => {
+      const id = 1;
+      const result = new VehicleBrandDto();
+      jest.spyOn(service, 'findOne').mockResolvedValue(result);
 
-      expect(await controller.findOne('1')).toEqual(result);
-      expect(mockVehicleBrandsService.findOne).toHaveBeenCalledWith(1);
+      expect(await controller.findOne(id)).toBe(result);
+      expect(service.findOne).toHaveBeenCalledWith(id);
     });
   });
 
   describe('update', () => {
-    it('should update a vehicle brand', async () => {
-      const updateVehicleBrandDto: UpdateVehicleBrandDto = { name: 'Toyota' };
-      const result = { id: 1, name: 'Toyota' };
-      mockVehicleBrandsService.update.mockResolvedValue(result);
+    it('should call service.update with correct parameters', async () => {
+      const id = 1;
+      const updateVehicleBrandDto: UpdateVehicleBrandDto = { name: 'Honda' };
+      const result = new VehicleBrandDto();
+      jest.spyOn(service, 'update').mockResolvedValue(result);
 
-      expect(await controller.update('1', updateVehicleBrandDto)).toEqual(
-        result
-      );
-      expect(mockVehicleBrandsService.update).toHaveBeenCalledWith(
-        1,
-        updateVehicleBrandDto
-      );
-    });
-  });
-
-  describe('remove', () => {
-    it('should remove a vehicle brand', async () => {
-      const result = { id: 1, name: 'Toyota' };
-      mockVehicleBrandsService.remove.mockResolvedValue(result);
-
-      expect(await controller.remove('1')).toEqual(result);
-      expect(mockVehicleBrandsService.remove).toHaveBeenCalledWith(1);
+      expect(await controller.update(id, updateVehicleBrandDto)).toBe(result);
+      expect(service.update).toHaveBeenCalledWith(id, updateVehicleBrandDto);
     });
   });
 });

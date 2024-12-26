@@ -25,7 +25,7 @@ export class VehicleBrandsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({ type: VehicleBrandDto })
-  @ApiConflictResponse({ description: 'Vehicle brand already exists' })
+  @ApiConflictResponse({ description: 'Vehicle brand already exists', example: { status: 409, error: 'Vehicle brand already exists' } })
   create(@Body() createVehicleBrandDto: CreateVehicleBrandDto) {
     return this.vehicleBrandsService.create(createVehicleBrandDto);
   }
@@ -40,7 +40,7 @@ export class VehicleBrandsController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: VehicleBrandDto })
-  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found', example: { status: 404, error: 'Vehicle brand not found' } })
   findOne(@Param('id') id: number) {
     return this.vehicleBrandsService.findOne(id);
   }
@@ -48,7 +48,8 @@ export class VehicleBrandsController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: VehicleBrandDto })
-  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found', example: { status: 404, error: 'Vehicle brand not found' } })
+  @ApiConflictResponse({ description: 'Vehicle brand already exists', example: { status: 409, error: 'Vehicle brand already exists' } })
   update(
     @Param('id') id: number,
     @Body() updateVehicleBrandDto: UpdateVehicleBrandDto
@@ -59,7 +60,7 @@ export class VehicleBrandsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'Vehicle brand removed' })
-  @ApiNotFoundResponse({ description: 'Vehicle brand not found' })
+  @ApiNotFoundResponse({ description: 'Vehicle brand not found', example: { status: 404, error: 'Vehicle brand not found' } })
   remove(@Param('id') id: number) {
     return this.vehicleBrandsService.remove(id);
   }

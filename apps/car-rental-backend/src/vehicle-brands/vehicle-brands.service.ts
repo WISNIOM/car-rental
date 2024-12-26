@@ -39,14 +39,7 @@ export class VehicleBrandsService {
   }
 
   async findOne(id: number) {
-    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
-    if (!vehicle) {
-      throw new HttpException(
-        { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
-        HttpStatus.NOT_FOUND
-      );
-    }
-    return vehicle;
+    return this.vehicleBrandsRepository.findOneBy({ id });
   }
 
   async findByName(name: string) {
@@ -61,6 +54,21 @@ export class VehicleBrandsService {
   }
 
   async update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
+    const { name } = updateVehicleBrandDto;
+    let vehicleBrand: VehicleBrand;
+    try {
+      vehicleBrand = await this.findByName(name);
+    } catch (error) {
+      if (error.status !== HttpStatus.NOT_FOUND) {
+        throw error;
+      }
+    }
+    if (vehicleBrand) {
+      throw new HttpException(
+        { status: HttpStatus.CONFLICT, error: 'Vehicle brand already exists' },
+        HttpStatus.CONFLICT
+      );
+    }
     const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
     if (!vehicle) {
       throw new HttpException(
@@ -68,7 +76,10 @@ export class VehicleBrandsService {
         HttpStatus.NOT_FOUND
       );
     }
-    return this.vehicleBrandsRepository.update(id, updateVehicleBrandDto);
+    await this.vehicleBrandsRepository.save({ id, name });
+    return await this.vehicleBrandsRepository.findOneBy({
+      id,
+    });
   }
 
   async remove(id: number) {
