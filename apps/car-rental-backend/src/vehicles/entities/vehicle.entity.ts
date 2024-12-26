@@ -3,14 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VehicleBrand } from '../../vehicle-brands/entities/vehicle-brand.entity';
+import { AbstractEntity } from '../../abstract/abstract.entity';
 
 @Entity()
-export class Vehicle {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Vehicle extends AbstractEntity {
   @ManyToOne(() => VehicleBrand)
   @JoinColumn({ name: 'brand' })
   brand: VehicleBrand;
