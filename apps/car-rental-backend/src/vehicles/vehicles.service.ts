@@ -13,7 +13,7 @@ export class VehiclesService {
   ) {}
 
   create(createVehicleDto: CreateVehicleDto) {
-    this.vehiclesRepository.save(createVehicleDto);
+    return this.vehiclesRepository.save(createVehicleDto);
   }
 
   findAll() {
