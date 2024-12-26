@@ -4,6 +4,9 @@ import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VehicleBrand } from './entities/vehicle-brand.entity';
+import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
+import { PageMetaDto } from '../common/pages/dto/page-meta.dto';
+import { PageDto } from '../common/pages/dto/page.dto';
 
 @Injectable()
 export class VehicleBrandsService {
@@ -24,8 +27,15 @@ export class VehicleBrandsService {
     return this.vehicleBrandsRepository.save(createVehicleBrandDto);
   }
 
-  findAll() {
-    return this.vehicleBrandsRepository.find();
+  async findVehicleBrands(pageOptionsDto: PageOptionsDto) {
+    const { order, take, skip } = pageOptionsDto;
+    const queryBuilder =
+      this.vehicleBrandsRepository.createQueryBuilder('vehicleBrand');
+    queryBuilder.orderBy('vehicleBrand.name', order).skip(skip).take(take);
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    return new PageDto(entities, pageMetaDto);
   }
 
   findOne(id: number) {

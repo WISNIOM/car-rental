@@ -1,7 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { VehicleBrandsService } from './vehicle-brands.service';
 import { CreateVehicleBrandDto } from './dto/create-vehicle-brand.dto';
 import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
+import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
+import { ApiPaginatedResponse } from '../common/decorators/api-paginated-response.decorator';
+import { VehicleBrandDto } from './dto/vehicle-brand.dto';
 
 @Controller('vehicle-brands')
 export class VehicleBrandsController {
@@ -13,8 +27,10 @@ export class VehicleBrandsController {
   }
 
   @Get()
-  findAll() {
-    return this.vehicleBrandsService.findAll();
+  @HttpCode(HttpStatus.OK)
+  @ApiPaginatedResponse(VehicleBrandDto)
+  findVehicleBrands(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.vehicleBrandsService.findVehicleBrands(pageOptionsDto);
   }
 
   @Get(':id')
@@ -23,7 +39,10 @@ export class VehicleBrandsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVehicleBrandDto: UpdateVehicleBrandDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateVehicleBrandDto: UpdateVehicleBrandDto
+  ) {
     return this.vehicleBrandsService.update(+id, updateVehicleBrandDto);
   }
 
