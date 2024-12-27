@@ -1,14 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Length } from 'class-validator';
-import { IsFirstLetterUppercase } from '../../common/validators/is-first-letter-uppercase.decorator';
-export class CreateVehicleBrandDto {
-  @IsString()
-  @Length(1, 50)
-  @IsFirstLetterUppercase()
-  @ApiProperty({
-    example: 'Toyota',
-    description: 'The name of the vehicle brand. The first character must be uppercase. Allowed length is 1-50 characters.',
-    type: 'string',
-  })
-  name: string;
-}
+import { PickType } from '@nestjs/swagger';
+import { VehicleBrandDto } from './vehicle-brand.dto';
+export class CreateVehicleBrandDto extends PickType(VehicleBrandDto, [
+  'name',
+] as const) {}

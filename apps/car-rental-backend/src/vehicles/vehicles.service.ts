@@ -4,16 +4,22 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 import { Repository } from 'typeorm';
+import { VehicleBrandsService } from '../vehicle-brands/vehicle-brands.service';
 
 @Injectable()
 export class VehiclesService {
   constructor(
     @InjectRepository(Vehicle)
-    private vehiclesRepository: Repository<Vehicle>
+    private vehiclesRepository: Repository<Vehicle>,
+    private vehicleBrandsService: VehicleBrandsService
   ) {}
 
-  create(createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesRepository.save(createVehicleDto);
+  async create(createVehicleDto: CreateVehicleDto) {
+    const brand = await this.vehicleBrandsService.findByName(
+      createVehicleDto.brand
+    );
+    const saveVehicleOpts = { ...createVehicleDto, brand: brand };
+    return this.vehiclesRepository.save(saveVehicleOpts);
   }
 
   findAll() {
