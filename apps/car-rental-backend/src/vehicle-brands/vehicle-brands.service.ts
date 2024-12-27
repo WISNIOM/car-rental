@@ -7,7 +7,10 @@ import { VehicleBrand } from './entities/vehicle-brand.entity';
 import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
 import { PageMetaDto } from '../common/pages/dto/page-meta.dto';
 import { PageDto } from '../common/pages/dto/page.dto';
+import { VehicleBrandDto } from './dto/vehicle-brand.dto';
 
+type VehicleBrandField = keyof VehicleBrandDto;
+type VehicleBrandFieldValue = VehicleBrandDto[VehicleBrandField];
 @Injectable()
 export class VehicleBrandsService {
   constructor(
@@ -38,12 +41,13 @@ export class VehicleBrandsService {
     return new PageDto(entities, pageMetaDto);
   }
 
-  async findOne(id: number) {
-    return this.vehicleBrandsRepository.findOneBy({ id });
-  }
-
-  async findByName(name: string) {
-    const vehicle = await this.vehicleBrandsRepository.findOneBy({ name });
+  private async findByField(
+    field: VehicleBrandField,
+    value: VehicleBrandFieldValue
+  ) {
+    const vehicle = await this.vehicleBrandsRepository.findOneBy({
+      [field]: value,
+    });
     if (!vehicle) {
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
@@ -51,6 +55,14 @@ export class VehicleBrandsService {
       );
     }
     return vehicle;
+  }
+
+  async findOne(id: number) {
+    return this.findByField('id', id);
+  }
+
+  async findByName(name: string) {
+    return this.findByField('name', name);
   }
 
   async update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
@@ -69,7 +81,7 @@ export class VehicleBrandsService {
         HttpStatus.CONFLICT
       );
     }
-    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
+    const vehicle = await this.findOne(id);
     if (!vehicle) {
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
@@ -77,9 +89,7 @@ export class VehicleBrandsService {
       );
     }
     await this.vehicleBrandsRepository.save({ id, name });
-    return await this.vehicleBrandsRepository.findOneBy({
-      id,
-    });
+    return await this.findOne(id);
   }
 
   async remove(id: number) {
