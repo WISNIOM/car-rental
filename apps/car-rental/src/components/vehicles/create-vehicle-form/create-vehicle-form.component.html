@@ -1,0 +1,22 @@
+<form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+  <mat-form-field>
+    <mat-label>Registration Number</mat-label>
+    <input matInput formControlName="registrationNumber" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Vehicle Identification Number</mat-label>
+    <input matInput formControlName="vehicleIdentificationNumber" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Brand</mat-label>
+    <mat-select formControlName="brand">
+      <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.id">
+        {{ brand.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-flat-button color="primary" type="submit">Submit</button>
+</form>
