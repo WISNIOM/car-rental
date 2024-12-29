@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
-import { VehicleBrandDto } from '../../../../src/dto/vehicle-brand';
+import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 
 @Component({
   selector: 'app-create-vehicle-form',
@@ -34,9 +34,11 @@ export class CreateVehicleFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.vehiclesBrandService.getVehicleBrands().subscribe((response) => {
-      this.vehicleBrands = response.data;
-    });
+    this.vehiclesBrandService
+      .getVehicleBrands({ sortField: 'name', take: 5 })
+      .subscribe((response) => {
+        this.vehicleBrands = response.data;
+      });
   }
 
   onSubmit(): void {
