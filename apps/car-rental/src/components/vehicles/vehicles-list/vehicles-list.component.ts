@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehiclesService } from '../../../services/vehicles.service';
 import { VehicleBrandsService } from '../../../services/vehicle-brands.service';
@@ -8,16 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
-import {
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltip } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -28,21 +24,31 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatDividerModule,
     MatIconModule,
     MatSlideToggleModule,
-    MatTooltip,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.css',
 })
 export class VehiclesListComponent implements OnInit {
+  vehicleForm: FormGroup;
   vehicles: VehicleDto[] = [];
   vehicleBrands: VehicleBrandDto[] = [];
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  readonly dialog = inject(MatDialog);
+  displayedColumns: string[] = ['brand', 'registrationNumber', 'vehicleIdentificationNumber'];
 
   constructor(
+    private readonly fb: FormBuilder,
     private readonly vehiclesService: VehiclesService,
     private readonly vehiclesBrandService: VehicleBrandsService
-  ) {}
+  ) {
+    this.vehicleForm = this.fb.group({
+      brand: [''],
+      registrationNumber: [''],
+      vehicleIdentificationNumber: [''],
+    });
+  }
 
   ngOnInit(): void {
     this.vehiclesService.getVehicles().subscribe((response) => {
@@ -53,35 +59,7 @@ export class VehiclesListComponent implements OnInit {
     });
   }
 
-  openDialog(): void {
-    this.dialog.open(CreateVehicleDialogComponent, {
-      width: '250px',
-    });
-  }
-}
-
-@Component({
-  selector: 'app-create-vehicle-dialog',
-  template: ` <h2 mat-dialog-title>Delete file</h2>
-    <mat-dialog-content>
-      Would you like to delete cat.jpeg?
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button mat-dialog-close>No</button>
-      <button mat-button mat-dialog-close cdkFocusInitial>Ok</button>
-    </mat-dialog-actions>`,
-  imports: [
-    MatButtonModule,
-    MatDialogActions,
-    MatDialogClose,
-    MatDialogTitle,
-    MatDialogContent,
-  ],
-})
-export class CreateVehicleDialogComponent {
-  constructor(public dialogRef: MatDialogRef<CreateVehicleDialogComponent>) {}
-
-  close(): void {
-    this.dialogRef.close();
+  onSubmit(): void {
+    console.log(this.vehicleForm.value);
   }
 }
