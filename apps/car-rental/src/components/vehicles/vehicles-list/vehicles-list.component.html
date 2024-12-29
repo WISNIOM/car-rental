@@ -1,0 +1,17 @@
+<div *ngIf="vehicles">
+  <h2>Vehicle List</h2>
+  <ul>
+    <li *ngFor="let vehicle of vehicles">
+      {{ vehicle.registrationNumber }} - {{ vehicle.brand }}
+      {{ vehicle.model }} ({{ vehicle.year }})
+    </li>
+  </ul>
+</div>
+<div *ngIf="vehicleBrands">
+    <h2>Vehicle Brands List</h2>
+    <ul>
+      <li *ngFor="let brand of vehicleBrands">
+        {{ brand }}
+      </li>
+    </ul>
+  </div>
