@@ -3,7 +3,6 @@
   <ul>
     <li *ngFor="let vehicle of vehicles">
       {{ vehicle.registrationNumber }} - {{ vehicle.brand }}
-      {{ vehicle.model }} ({{ vehicle.year }})
     </li>
   </ul>
 </div>
@@ -11,7 +10,7 @@
     <h2>Vehicle Brands List</h2>
     <ul>
       <li *ngFor="let brand of vehicleBrands">
-        {{ brand }}
+        {{ brand.id }} - {{ brand.name }}
       </li>
     </ul>
   </div>

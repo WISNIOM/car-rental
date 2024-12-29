@@ -8,6 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder().setTitle('Car Rental API').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   const globalPrefix = 'api';
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;

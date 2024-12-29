@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehiclesService } from '../../../services/vehicles.service';
 import { VehicleBrandsService } from '../../../services/vehicle-brands.service';
+import { VehicleDto } from '../../../../src/dto/vehicle';
+import { VehicleBrandDto } from '../../../../src/dto/vehicle-brand';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -10,8 +12,8 @@ import { VehicleBrandsService } from '../../../services/vehicle-brands.service';
   styleUrl: './vehicles-list.component.css',
 })
 export class VehiclesListComponent implements OnInit {
-  vehicles: any[] = [];
-  vehicleBrands: string[] = [];
+  vehicles: VehicleDto[] = [];
+  vehicleBrands: VehicleBrandDto[] = [];
 
   constructor(
     private readonly vehiclesService: VehiclesService,
@@ -19,11 +21,13 @@ export class VehiclesListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.vehiclesService.getVehicles().subscribe((data) => {
-      this.vehicles = data;
+    this.vehiclesService.getVehicles().subscribe((response) => {
+      this.vehicles = response.data;
     });
-    this.vehiclesBrandService.getVehicleBrands().subscribe((data: string[]) => {
-      this.vehicleBrands = data;
-    });
+    this.vehiclesBrandService
+      .getVehicleBrands()
+      .subscribe((response) => {
+        this.vehicleBrands = response.data;
+      });
   }
 }
