@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,10 +15,11 @@ type VehicleField = keyof VehicleDto;
 type VehicleFieldValue = VehicleDto[VehicleField];
 @Injectable()
 export class VehiclesService {
+  private readonly logger = new Logger(VehiclesService.name);
   constructor(
     @InjectRepository(Vehicle)
-    private vehiclesRepository: Repository<Vehicle>,
-    private vehicleBrandsService: VehicleBrandsService
+    private readonly vehiclesRepository: Repository<Vehicle>,
+    private readonly vehicleBrandsService: VehicleBrandsService
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto): Promise<VehicleDto> {
@@ -35,6 +36,7 @@ export class VehiclesService {
       ],
     });
     if (vehicle.length) {
+      this.logger.error('Vehicle with such registrationNumber/vehicleIdentificationNumber already exists');
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
@@ -57,15 +59,18 @@ export class VehiclesService {
   }
 
   private async findByField(field: VehicleField, value: VehicleFieldValue) {
+    this.logger.log(`Finding vehicle by ${field} with value ${value}`);
     const vehicle = await this.vehiclesRepository.findOneBy({
       [field]: value,
     });
     if (!vehicle) {
+      this.logger.error('Vehicle not found');
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle not found' },
         HttpStatus.NOT_FOUND
       );
     }
+    this.logger.log(`Vehicle found by ${field} with value ${value}`);
     return vehicle;
   }
 
@@ -79,13 +84,14 @@ export class VehiclesService {
         ? `vehicle.${sortField}`
         : 'vehicle.id';
     queryBuilder.orderBy(vehicleSortField, order).skip(skip).take(take);
-    const itemCount = await queryBuilder.getCount();
+    this.logger.log(`Finding vehicles with page options ${JSON.stringify(pageOptionsDto)}`);
     const { entities } = await queryBuilder.getRawAndEntities();
+    this.logger.log(`Found ${entities.length} vehicles`);
     const mappedEntities: Array<VehicleDto> = entities.map((entity) => {
       const { brand, ...rest } = entity;
       return { ...rest, brand: brand.name };
     });
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({ itemCount: entities.length, pageOptionsDto });
     return new PageDto(mappedEntities, pageMetaDto);
   }
 
@@ -109,16 +115,18 @@ export class VehiclesService {
     }
     const vehicleToBeUpdated = await this.findOne(id);
     if (!vehicleToBeUpdated) {
+      this.logger.error('Vehicle not found');
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle not found' },
         HttpStatus.NOT_FOUND
       );
     }
-
+    this.logger.log(`Checking if vehicle with such registrationNumber/vehicleIdentificationNumber already exists`);
     const vehicle = await this.vehiclesRepository.find({
       where: [{ registrationNumber }, { vehicleIdentificationNumber }],
     });
     if (vehicle.length) {
+      this.logger.error('Vehicle with such registrationNumber/vehicleIdentificationNumber already exists');
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
@@ -128,22 +136,27 @@ export class VehiclesService {
         HttpStatus.CONFLICT
       );
     }
+    this.logger.log(`Updating vehicle with ${id}`);
     await this.vehiclesRepository.save({
       id,
       ...updateVehicleDto,
       brand: vehicleBrand,
     });
+    this.logger.log(`Vehicle with id ${id} updated`);
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
     const vehicle = await this.findOne(id);
     if (!vehicle) {
+      this.logger.error('Vehicle not found');
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle not found' },
         HttpStatus.NOT_FOUND
       );
     }
+    this.logger.log(`Removing vehicle with ${id}`);
     await this.vehiclesRepository.delete(id);
+    this.logger.log(`Vehicle with id ${id} removed`);
   }
 }
