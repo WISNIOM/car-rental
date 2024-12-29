@@ -18,10 +18,12 @@ export class VehicleBrandsService {
     private vehicleBrandsRepository: Repository<VehicleBrand>
   ) {}
 
-  async create(createVehicleBrandDto: CreateVehicleBrandDto) {
+  async create(createVehicleBrandDto: CreateVehicleBrandDto): Promise<VehicleBrandDto> {
     const { name } = createVehicleBrandDto;
-    const vehicleBrand = await this.findByName(name);
-    if (vehicleBrand) {
+    const vehicleBrand = await this.vehicleBrandsRepository.find({
+      where: { name },
+    });
+    if (vehicleBrand.length) {
       throw new HttpException(
         { status: HttpStatus.CONFLICT, error: 'Vehicle brand already exists' },
         HttpStatus.CONFLICT
@@ -30,11 +32,15 @@ export class VehicleBrandsService {
     return this.vehicleBrandsRepository.save(createVehicleBrandDto);
   }
 
-  async findVehicleBrands(pageOptionsDto: PageOptionsDto) {
-    const { order, take, skip } = pageOptionsDto;
+  async findVehicleBrands(pageOptionsDto: PageOptionsDto): Promise<PageDto<VehicleBrandDto>> {
+    const { order, take, skip, sortField } = pageOptionsDto;
     const queryBuilder =
       this.vehicleBrandsRepository.createQueryBuilder('vehicleBrand');
-    queryBuilder.orderBy('vehicleBrand.name', order).skip(skip).take(take);
+    const vehicleBrandSortField =
+      sortField && sortField in VehicleBrandDto
+        ? `vehicleBrand.${sortField}`
+        : 'vehicleBrand.id';
+    queryBuilder.orderBy(vehicleBrandSortField, order).skip(skip).take(take);
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
@@ -57,25 +63,20 @@ export class VehicleBrandsService {
     return vehicle;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<VehicleBrandDto> {
     return this.findByField('id', id);
   }
 
-  async findByName(name: string) {
+  async findByName(name: string): Promise<VehicleBrandDto> {
     return this.findByField('name', name);
   }
 
-  async update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto) {
+  async update(id: number, updateVehicleBrandDto: UpdateVehicleBrandDto): Promise<VehicleBrandDto> {
     const { name } = updateVehicleBrandDto;
-    let vehicleBrand: VehicleBrand;
-    try {
-      vehicleBrand = await this.findByName(name);
-    } catch (error) {
-      if (error.status !== HttpStatus.NOT_FOUND) {
-        throw error;
-      }
-    }
-    if (vehicleBrand) {
+    const vehicleBrand = await this.vehicleBrandsRepository.find({
+      where: { name },
+    });
+    if (vehicleBrand.length) {
       throw new HttpException(
         { status: HttpStatus.CONFLICT, error: 'Vehicle brand already exists' },
         HttpStatus.CONFLICT
@@ -89,17 +90,17 @@ export class VehicleBrandsService {
       );
     }
     await this.vehicleBrandsRepository.save({ id, name });
-    return await this.findOne(id);
+    return this.findOne(id);
   }
 
-  async remove(id: number) {
-    const vehicle = await this.vehicleBrandsRepository.findOneBy({ id });
+  async remove(id: number): Promise<void> {
+    const vehicle = await this.findOne(id);
     if (!vehicle) {
       throw new HttpException(
         { status: HttpStatus.NOT_FOUND, error: 'Vehicle brand not found' },
         HttpStatus.NOT_FOUND
       );
     }
-    return this.vehicleBrandsRepository.delete(id);
+    await this.vehicleBrandsRepository.delete(id);
   }
 }

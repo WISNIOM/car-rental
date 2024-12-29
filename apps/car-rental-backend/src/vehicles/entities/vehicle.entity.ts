@@ -13,11 +13,11 @@ export class Vehicle extends AbstractEntity {
   @JoinColumn({ name: 'brand' })
   brand: VehicleBrand;
   @Column()
-  VIN: string;
+  vehicleIdentificationNumber: string;
   @Column()
   registrationNumber: string;
   @Column()
-  customerEmail: string;
+  clientEmail: string;
   @Column()
-  customerAddress: string;
+  clientAddress: string;
 }

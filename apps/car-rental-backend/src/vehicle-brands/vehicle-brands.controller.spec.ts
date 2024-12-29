@@ -22,6 +22,7 @@ describe('VehicleBrandsController', () => {
             findVehicleBrands: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -29,10 +30,6 @@ describe('VehicleBrandsController', () => {
 
     controller = module.get<VehicleBrandsController>(VehicleBrandsController);
     service = module.get<VehicleBrandsService>(VehicleBrandsService);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
   });
 
   describe('create', () => {
@@ -83,6 +80,16 @@ describe('VehicleBrandsController', () => {
 
       expect(await controller.update(id, updateVehicleBrandDto)).toBe(result);
       expect(service.update).toHaveBeenCalledWith(id, updateVehicleBrandDto);
+    });
+  });
+
+  describe('remove', () => {
+    it('should call service.remove with correct parameters', async () => {
+      const id = 1;
+      jest.spyOn(service, 'remove').mockResolvedValue(undefined);
+
+      expect(await controller.remove(id)).toBeUndefined();
+      expect(service.remove).toHaveBeenCalledWith(id);
     });
   });
 });
