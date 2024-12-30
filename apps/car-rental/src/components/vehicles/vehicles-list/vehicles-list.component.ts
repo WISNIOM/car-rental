@@ -7,7 +7,7 @@ import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateVehicleFormComponent } from "../create-vehicle-form/create-vehicle-form.component";
+import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicle-form.component';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -17,33 +17,32 @@ import { CreateVehicleFormComponent } from "../create-vehicle-form/create-vehicl
     MatButtonModule,
     MatDividerModule,
     CreateVehicleFormComponent,
-],
+  ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.css',
 })
 export class VehiclesListComponent implements OnInit {
-
   vehicles: VehicleDto[] = [];
   vehicleBrands: VehicleBrandDto[] = [];
-  displayedColumns: string[] = ['brand', 'registrationNumber', 'vehicleIdentificationNumber'];
+  displayedColumns: string[] = [
+    'brand',
+    'registrationNumber',
+    'vehicleIdentificationNumber',
+  ];
 
-  constructor(
-    private readonly vehiclesService: VehiclesService,
-    private readonly vehiclesBrandService: VehicleBrandsService
-  ) {
-    
-  }
+  constructor(private readonly vehiclesService: VehiclesService) {}
 
   ngOnInit(): void {
+    this.loadVehicles();
+  }
+
+  loadVehicles(): void {
     this.vehiclesService.getVehicles().subscribe((response) => {
-      this.vehicles = response.data;
-    });
-    this.vehiclesBrandService.getVehicleBrands().subscribe((response) => {
-      this.vehicleBrands = response.data;
+      this.vehicles = [...response.data];
     });
   }
 
-  onVehicleCreated(): void { 
-    console.log();
+  onVehicleCreated(): void {
+    this.loadVehicles();
   }
 }

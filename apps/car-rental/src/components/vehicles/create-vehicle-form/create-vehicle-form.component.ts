@@ -1,4 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -29,6 +36,7 @@ import { VehiclesService } from '../../../../src/services/vehicles.service';
 })
 export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
+  @Output() vehicleCreated = new EventEmitter<void>();
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
@@ -143,6 +151,7 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
       .createVehicle({ brand, registrationNumber, vehicleIdentificationNumber })
       .subscribe((response) => {
         console.log(response);
+        this.vehicleCreated.emit();
         this.vehicleForm.reset();
       });
   }
