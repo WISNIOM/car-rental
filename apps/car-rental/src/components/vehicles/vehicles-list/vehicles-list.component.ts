@@ -1,20 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehiclesService } from '../../../services/vehicles.service';
-import { VehicleBrandsService } from '../../../services/vehicle-brands.service';
 import { VehicleDto } from '../../../dtos/vehicle';
 import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
 import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicle-form.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-vehicles-list',
   imports: [
     CommonModule,
     MatTableModule,
-    MatButtonModule,
+    MatPaginatorModule,
     MatDividerModule,
     CreateVehicleFormComponent,
   ],
