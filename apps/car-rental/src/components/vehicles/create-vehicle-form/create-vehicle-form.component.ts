@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
+import { VehiclesService } from '../../../../src/services/vehicles.service';
 
 @Component({
   selector: 'app-create-vehicle-form',
@@ -32,7 +33,10 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
 
-  constructor(private readonly vehiclesBrandService: VehicleBrandsService) {
+  constructor(
+    private readonly vehiclesBrandService: VehicleBrandsService,
+    private readonly vehiclesService: VehiclesService
+  ) {
     this.vehicleForm = new FormGroup({
       brand: new FormControl('', [Validators.required]),
       registrationNumber: new FormControl('', [
@@ -133,6 +137,13 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    console.log(this.vehicleForm.value);
+    const { brand, registrationNumber, vehicleIdentificationNumber } =
+      this.vehicleForm.value;
+    this.vehiclesService
+      .createVehicle({ brand, registrationNumber, vehicleIdentificationNumber })
+      .subscribe((response) => {
+        console.log(response);
+        this.vehicleForm.reset();
+      });
   }
 }

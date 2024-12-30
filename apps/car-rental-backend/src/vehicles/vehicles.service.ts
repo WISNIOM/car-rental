@@ -36,7 +36,9 @@ export class VehiclesService {
       ],
     });
     if (vehicle.length) {
-      this.logger.error('Vehicle with such registrationNumber/vehicleIdentificationNumber already exists');
+      this.logger.error(
+        'Vehicle with such registrationNumber/vehicleIdentificationNumber already exists'
+      );
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
@@ -49,12 +51,12 @@ export class VehiclesService {
     const result = await this.vehiclesRepository.save({
       ...createVehicleDto,
       brand: brand,
+      clientAddress: '',
+      clientEmail: '',
     });
     return {
       ...result,
       brand: brand.name,
-      clientAddress: '',
-      clientEmail: '',
     };
   }
 
@@ -79,19 +81,25 @@ export class VehiclesService {
   ): Promise<PageDto<VehicleDto>> {
     const { order, take, skip, sortField } = pageOptionsDto;
     const queryBuilder = this.vehiclesRepository.createQueryBuilder('vehicle');
+    queryBuilder.leftJoinAndSelect('vehicle.brand', 'brand');
     const vehicleSortField =
       sortField && sortField in VehicleDto
         ? `vehicle.${sortField}`
         : 'vehicle.id';
     queryBuilder.orderBy(vehicleSortField, order).skip(skip).take(take);
-    this.logger.log(`Finding vehicles with page options ${JSON.stringify(pageOptionsDto)}`);
+    this.logger.log(
+      `Finding vehicles with page options ${JSON.stringify(pageOptionsDto)}`
+    );
     const { entities } = await queryBuilder.getRawAndEntities();
     this.logger.log(`Found ${entities.length} vehicles`);
     const mappedEntities: Array<VehicleDto> = entities.map((entity) => {
       const { brand, ...rest } = entity;
       return { ...rest, brand: brand.name };
     });
-    const pageMetaDto = new PageMetaDto({ itemCount: entities.length, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({
+      itemCount: entities.length,
+      pageOptionsDto,
+    });
     return new PageDto(mappedEntities, pageMetaDto);
   }
 
@@ -121,12 +129,16 @@ export class VehiclesService {
         HttpStatus.NOT_FOUND
       );
     }
-    this.logger.log(`Checking if vehicle with such registrationNumber/vehicleIdentificationNumber already exists`);
+    this.logger.log(
+      `Checking if vehicle with such registrationNumber/vehicleIdentificationNumber already exists`
+    );
     const vehicle = await this.vehiclesRepository.find({
       where: [{ registrationNumber }, { vehicleIdentificationNumber }],
     });
     if (vehicle.length) {
-      this.logger.error('Vehicle with such registrationNumber/vehicleIdentificationNumber already exists');
+      this.logger.error(
+        'Vehicle with such registrationNumber/vehicleIdentificationNumber already exists'
+      );
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,

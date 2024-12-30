@@ -105,7 +105,7 @@
       <mat-error *ngIf="vehicleForm.get('brand')?.hasError('required')">
         Marka jest wymagana
       </mat-error>
-      <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.id">
+      <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.name">
         {{ brand.name }}
       </mat-option>
     </mat-select>

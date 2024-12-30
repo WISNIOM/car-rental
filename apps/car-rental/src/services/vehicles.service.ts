@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { VehicleDto } from '../dtos/vehicle';
+import { CreateVehicleDto, VehicleDto } from '../dtos/vehicle';
 import { Page } from '../dtos/page';
 
 @Injectable({
@@ -13,5 +13,10 @@ export class VehiclesService {
 
   getVehicles(): Observable<Page<VehicleDto>> {
     return this.http.get<Page<VehicleDto>>(this.apiUrl);
+  }
+
+  createVehicle(vehicle: CreateVehicleDto): Observable<VehicleDto> {
+    console.log(vehicle);
+    return this.http.post<VehicleDto>(this.apiUrl, vehicle);
   }
 }
