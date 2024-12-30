@@ -1,13 +1,57 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
     image: mysql:5.7
     restart: always
+    ports:
+      - "3306:3306"
+    container_name: car_rental_db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: car_rental
-    ports:
-      - "3306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/car-rental-backend/Dockerfile
+      target: development
+    command: npm run serve:car-rental-backend
+    container_name: car_rental_backend
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: car_rental
+    volumes:
+      - .:/app
+      - /app/node_modules
+  
+  frontend:
+    build:
+      context: .
+      dockerfile: ./apps/car-rental/Dockerfile
+      target: development
+    command: npm run serve:car-rental -- --host 0.0.0.0
+    container_name: car_rental_frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+networks:
+  default:
+    name: car_rental_network
+    driver: bridge

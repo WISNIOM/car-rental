@@ -9,7 +9,10 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "start:api": "nest start",
+    "build:car-rental": "nx build car-rental",
+    "build:car-rental-backend": "nx build car-rental-backend",
+    "serve:car-rental": "nx serve car-rental",
+    "serve:car-rental-backend": "nx serve car-rental-backend",
     "start:api:dev": "nx run car-rental-backend:serve --configuration=development",
     "start:api:debug": "nest start --debug --watch"
   },
