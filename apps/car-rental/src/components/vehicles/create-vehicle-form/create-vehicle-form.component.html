@@ -11,7 +11,11 @@
 
   <mat-form-field>
     <mat-label>Brand</mat-label>
-    <mat-select formControlName="brand">
+    <mat-select
+      #brandDropdown
+      formControlName="brand"
+      (openedChange)="onDropdownOpened($event)"
+    >
       <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.id">
         {{ brand.name }}
       </mat-option>
