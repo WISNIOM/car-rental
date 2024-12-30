@@ -1,12 +1,95 @@
 <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
   <mat-form-field>
-    <mat-label>Registration Number</mat-label>
-    <input matInput formControlName="registrationNumber" />
+    <mat-label>Numer Rejestracyjny</mat-label>
+    <input
+      matInput
+      placeholder="SB33221"
+      formControlName="registrationNumber"
+    />
+    <mat-error
+      *ngIf="vehicleForm.get('registrationNumber')?.hasError('required')"
+    >
+      Numer Rejestracyjny jest wymagany
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('vehicleIdentificationNumber')
+          ?.hasError('doesNotContainPolishLetters')
+      "
+    >
+      Numer Rejestracyjny nie może zawierać polskich znaków
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('registrationNumber')
+          ?.hasError('doesContainOnlyDigitsAndUppercaseLetters')
+      "
+    >
+      Numer Rejestracyjny musi zawierać tylko cyfry i wielkie litery
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('registrationNumber')
+          ?.hasError('doesNotContainSpecificLetters')
+      "
+    >
+      Numer Rejestracyjny nie może zawierać liter B, D, I, O, Z po oznaczeniu
+      powiatu
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label>Vehicle Identification Number</mat-label>
-    <input matInput formControlName="vehicleIdentificationNumber" />
+    <mat-label>Numer VIN</mat-label>
+    <input
+      matInput
+      placeholder="1FAFP34N55W122943"
+      formControlName="vehicleIdentificationNumber"
+    />
+    <mat-error
+      *ngIf="
+        vehicleForm.get('vehicleIdentificationNumber')?.hasError('required')
+      "
+    >
+      Numer VIN jest wymagany
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm.get('vehicleIdentificationNumber')?.hasError('minlength') ||
+        vehicleForm.get('vehicleIdentificationNumber')?.hasError('maxlength')
+      "
+    >
+      Numer VIN musi mieć 17 znaków
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('vehicleIdentificationNumber')
+          ?.hasError('doesNotContainPolishLetters')
+      "
+    >
+      Numer VIN nie może zawierać polskich znaków
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('vehicleIdentificationNumber')
+          ?.hasError('doesContainOnlyDigitsAndUppercaseLetters')
+      "
+    >
+      Numer VIN musi zawierać tylko cyfry i wielkie litery
+    </mat-error>
+    <mat-error
+      *ngIf="
+        vehicleForm
+          .get('vehicleIdentificationNumber')
+          ?.hasError('doesNotContainSpecificLetters')
+      "
+    >
+      Numer VIN nie może zawierać liter I, O, Q
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field>
@@ -14,13 +97,17 @@
     <mat-select
       #brandDropdown
       formControlName="brand"
+      placeholder="Toyota"
       (openedChange)="onDropdownOpened($event)"
     >
+      <mat-error *ngIf="vehicleForm.get('brand')?.hasError('required')">
+        Marka jest wymagana
+      </mat-error>
       <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.id">
         {{ brand.name }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <button mat-flat-button color="primary" type="submit">Submit</button>
+  <button mat-flat-button type="submit">Submit</button>
 </form>

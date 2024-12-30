@@ -1,6 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
@@ -25,14 +32,25 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly vehiclesBrandService: VehicleBrandsService
-  ) {
-    this.vehicleForm = this.fb.group({
-      brand: [''],
-      registrationNumber: [''],
-      vehicleIdentificationNumber: [''],
+  constructor(private readonly vehiclesBrandService: VehicleBrandsService) {
+    this.vehicleForm = new FormGroup({
+      brand: new FormControl('', [Validators.required]),
+      registrationNumber: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(7),
+        this.doesNotContainPolishLetters(),
+        this.doesContainOnlyDigitsAndUppercaseLetters(),
+        this.doesNotContainSpecificLetters(['B', 'D', 'I', 'O', 'Z'], 2),
+      ]),
+      vehicleIdentificationNumber: new FormControl('', [
+        Validators.required,
+        Validators.minLength(17),
+        Validators.maxLength(17),
+        this.doesNotContainPolishLetters(),
+        this.doesContainOnlyDigitsAndUppercaseLetters(),
+        this.doesNotContainSpecificLetters(['I', 'O', 'Q']),
+      ]),
     });
   }
 
@@ -56,6 +74,48 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  doesNotContainPolishLetters(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+      if (value && /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(value)) {
+        return { doesNotContainPolishLetters: true };
+      }
+      return null;
+    };
+  }
+
+  doesContainOnlyDigitsAndUppercaseLetters(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+      if (value && !/^[A-Z0-9]+$/.test(value)) {
+        return { doesContainOnlyDigitsAndUppercaseLetters: true };
+      }
+      return null;
+    };
+  }
+
+  doesNotContainSpecificLetters(
+    letters: string[],
+    letterIndex = 0
+  ): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+      if (!letters) {
+        return null;
+      }
+      if (letterIndex && value) {
+        if (letterIndex > value.length) {
+          return null;
+        }
+        const textFromIndex = value.slice(letterIndex);
+        if (letters.some((letter: string) => textFromIndex.includes(letter))) {
+          return { doesNotContainSpecificLetters: true };
+        }
+      }
+      return null;
+    };
+  }
+
   loadVehicleBrands(): void {
     this.vehiclesBrandService
       .getVehicleBrands({ sortField: 'name', take: 10, page: this.currentPage })
@@ -67,12 +127,7 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
 
   onScroll(): void {
     const dropdown = this.brandDropdown.panel.nativeElement;
-    console.log('Scroll event triggered');
-    console.log(
-      `scrollTop: ${dropdown.scrollTop}, clientHeight: ${dropdown.clientHeight}, scrollHeight: ${dropdown.scrollHeight}`
-    );
     if (dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight) {
-      console.log('Loading more vehicle brands');
       this.loadVehicleBrands();
     }
   }

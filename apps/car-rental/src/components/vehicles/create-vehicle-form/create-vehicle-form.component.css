@@ -3,3 +3,7 @@ form {
   flex-direction: column;
   align-items: center;
 }
+
+mat-form-field {
+  width: 25%;
+}
