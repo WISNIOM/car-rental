@@ -3,6 +3,7 @@
     <mat-label>Numer Rejestracyjny</mat-label>
     <input
       matInput
+      oninput="this.value = this.value.toUpperCase()"
       placeholder="SB33221"
       formControlName="registrationNumber"
     />
@@ -45,6 +46,7 @@
     <mat-label>Numer VIN</mat-label>
     <input
       matInput
+      oninput="this.value = this.value.toUpperCase()"
       placeholder="1FAFP34N55W122943"
       formControlName="vehicleIdentificationNumber"
     />
