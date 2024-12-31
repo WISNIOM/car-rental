@@ -8,7 +8,7 @@ import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'db',
+      host: 'localhost',
       port: 3306,
       username: 'root',
       password: 'root',

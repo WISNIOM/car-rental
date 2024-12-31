@@ -34,7 +34,7 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
   ],
   templateUrl: './create-vehicle-form.component.html',
-  styleUrl: './create-vehicle-form.component.css',
+  styleUrl: './create-vehicle-form.component.scss',
 })
 export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;

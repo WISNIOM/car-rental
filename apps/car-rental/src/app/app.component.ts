@@ -6,7 +6,7 @@ import { VehiclesListComponent } from "../components/vehicles/vehicles-list/vehi
   imports: [RouterModule, VehiclesListComponent],
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'car-rental';

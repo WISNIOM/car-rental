@@ -24,7 +24,7 @@ import { MatIconButton } from '@angular/material/button';
     CreateVehicleFormComponent,
   ],
   templateUrl: './vehicles-list.component.html',
-  styleUrl: './vehicles-list.component.css',
+  styleUrl: './vehicles-list.component.scss',
 })
 export class VehiclesListComponent implements OnInit, AfterViewInit {
   vehicles: VehicleDto[] = [];
@@ -37,6 +37,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     'customerAddress',
     'actions',
   ];
+  editedVehicle: VehicleDto | null = null;
   dataSource = new MatTableDataSource<VehicleDto>(this.vehicles);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -50,14 +51,19 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     this.loadVehicles();
   }
 
-  editVehicle(vehicle: any): void {
+  editVehicle(vehicle: VehicleDto): void {
     // Implement edit vehicle logic here
     console.log('Edit vehicle:', vehicle);
+    this.editedVehicle = vehicle;
   }
 
   removeVehicle(vehicle: any): void {
     // Implement remove vehicle logic here
     console.log('Delete vehicle:', vehicle);
+  }
+
+  cancelEditing(): void {
+    this.editedVehicle = null;
   }
 
   loadVehicles(): void {

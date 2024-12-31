@@ -16,7 +16,6 @@ export class VehiclesService {
   }
 
   createVehicle(vehicle: CreateVehicleDto): Observable<VehicleDto> {
-    console.log(vehicle);
     return this.http.post<VehicleDto>(this.apiUrl, vehicle);
   }
 }

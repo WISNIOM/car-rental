@@ -27,7 +27,7 @@
         ],
         "styles": [
           "@angular/material/prebuilt-themes/azure-blue.css",
-          "apps/car-rental/src/styles.css"
+          "apps/car-rental/src/styles.scss"
         ],
         "scripts": []
       },
