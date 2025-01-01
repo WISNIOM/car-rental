@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { NotificationService } from '../../../../src/services/notification.service';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -46,8 +47,8 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     'brand',
     'registrationNumber',
     'vehicleIdentificationNumber',
-    'customerEmail',
-    'customerAddress',
+    'clientEmail',
+    'clientAddress',
     'actions',
   ];
   editedVehicle: VehicleDto | null = null;
@@ -59,7 +60,8 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
-    private readonly vehiclesService: VehiclesService
+    private readonly vehiclesService: VehiclesService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngAfterViewInit(): void {
@@ -113,9 +115,22 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     this.editedVehicle = vehicle;
   }
 
-  removeVehicle(vehicle: any): void {
-    // Implement remove vehicle logic here
-    console.log('Delete vehicle:', vehicle);
+  removeVehicle(vehicle: VehicleDto): void {
+    this.vehiclesService.removeVehicle(vehicle.id).subscribe({
+      next: () => {
+        this.loadVehicles();
+        this.notificationService.showSuccess('Pojazd został usunięty. 🚗');
+      },
+      error: (error) => {
+        if (error.error.status === 404) {
+          this.notificationService.showError(
+            'Nie znaleziono takiego pojazdu.😥'
+          );
+          return;
+        }
+        this.notificationService.showError('Nie udało się usunąć pojazdu. 😢');
+      },
+    });
   }
 
   cancelEditing(): void {
@@ -125,6 +140,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   loadVehicles(): void {
     this.vehiclesService.getVehicles().subscribe((response) => {
       this.vehicles = [...response.data];
+      this.dataSource.data = this.vehicles;
     });
   }
 }

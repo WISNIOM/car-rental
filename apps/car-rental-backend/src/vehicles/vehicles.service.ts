@@ -62,8 +62,17 @@ export class VehiclesService {
 
   private async findByField(field: VehicleField, value: VehicleFieldValue) {
     this.logger.log(`Finding vehicle by ${field} with value ${value}`);
-    const vehicle = await this.vehiclesRepository.findOneBy({
-      [field]: value,
+    const vehicle = await this.vehiclesRepository.findOne({
+      where: { [field]: value },
+      relations: ['brand'],
+      select: [
+        'id',
+        'registrationNumber',
+        'vehicleIdentificationNumber',
+        'brand',
+        'clientEmail',
+        'clientAddress',
+      ],
     });
     if (!vehicle) {
       this.logger.error('Vehicle not found');

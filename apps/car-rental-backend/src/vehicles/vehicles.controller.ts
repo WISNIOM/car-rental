@@ -69,7 +69,7 @@ export class VehiclesController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'Vehicle removed' })
-  @ApiNotFoundResponse({ description: 'Vehicle not found', example: { status: 404, error: 'Vehicle brand not found' } })
+  @ApiNotFoundResponse({ description: 'Vehicle not found', example: { status: 404, error: 'Vehicle not found' } })
   remove(@Param('id') id: number) {
     return this.vehiclesService.remove(id);
   }

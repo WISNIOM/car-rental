@@ -1,8 +1,6 @@
 import {
   Component,
   EventEmitter,
-  inject,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -20,14 +18,12 @@ import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { VehiclesService } from '../../../../src/services/vehicles.service';
+import { NotificationService } from '../../../../src/services/notification.service';
 import { MatButtonModule } from '@angular/material/button';
 import { CustomValidators } from '../../../../src/validators/custom-validators';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import {
-  MatSnackBar,
-} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-create-vehicle-form',
@@ -47,7 +43,6 @@ import {
 export class CreateVehicleFormComponent implements OnInit {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
   @Output() vehicleCreated = new EventEmitter<void>();
-  private _snackBar = inject(MatSnackBar);
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
@@ -57,7 +52,8 @@ export class CreateVehicleFormComponent implements OnInit {
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
     private readonly vehiclesService: VehiclesService,
-    private dialogRef: MatDialogRef<CreateVehicleFormComponent>
+    private readonly dialogRef: MatDialogRef<CreateVehicleFormComponent>,
+    private readonly notificationService: NotificationService
   ) {
     this.vehicleForm = new FormGroup({
       brand: new FormControl('', [Validators.required]),
@@ -126,25 +122,23 @@ export class CreateVehicleFormComponent implements OnInit {
       .subscribe({
         next: () => {
           this.vehicleCreated.emit();
-          this._snackBar.open(
-            'Stworzono samochód.🥳',
-            'Zamknij',
-            {
-              duration: 3000,
-            }
-          );
+          this.notificationService.showSuccess('Dodano pojazd.🥳');
           this.dialogRef.close('vehicleCreated');
         },
         error: (error) => {
           if (error.error.status === 409) {
-            this._snackBar.open(
-              'Samochód o podanym numerze rejestracyjnym lub numerze VIN już istnieje.😥',
-              'Zamknij',
-              {
-                duration: 3000,
-              }
+            this.notificationService.showError(
+              'Pojazd o podanym numerze rejestracyjnym lub numerze VIN już istnieje.😥'
             );
+            return;
           }
+          if (error.error.status === 404) {
+            this.notificationService.showError(
+              'Nie znaleziono takiej marki pojazdu.😥'
+            );
+            return;
+          }
+          this.notificationService.showError('Wysłano niepoprawne żądanie.😥');
         },
       });
   }

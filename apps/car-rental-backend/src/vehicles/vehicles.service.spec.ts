@@ -122,7 +122,7 @@ describe('VehiclesService', () => {
       const field = 'registrationNumber';
       const value = 'ABC123';
       const vehicle = new Vehicle();
-      jest.spyOn(vehiclesRepository, 'findOneBy').mockResolvedValue(vehicle);
+      jest.spyOn(vehiclesRepository, 'findOne').mockResolvedValue(vehicle);
 
       const result = await service['findByField'](field, value);
       expect(result).toEqual(vehicle);
@@ -131,7 +131,7 @@ describe('VehiclesService', () => {
     it('should throw an error if vehicle not found', async () => {
       const field = 'registrationNumber';
       const value = 'ABC123';
-      jest.spyOn(vehiclesRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(vehiclesRepository, 'findOne').mockResolvedValue(null);
 
       await expect(service['findByField'](field, value)).rejects.toThrow(
         new HttpException(
