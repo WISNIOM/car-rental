@@ -10,6 +10,9 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconButton } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -17,6 +20,8 @@ import { MatIconButton } from '@angular/material/button';
     CommonModule,
     MatTableModule,
     MatMenuModule,
+    FormsModule,
+    MatSelectModule,
     MatIconButton,
     MatIconModule,
     MatPaginatorModule,
@@ -40,8 +45,13 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   editedVehicle: VehicleDto | null = null;
   dataSource = new MatTableDataSource<VehicleDto>(this.vehicles);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('brandDropdown') brandDropdown!: MatSelect;
+  currentPage = 1;
 
-  constructor(private readonly vehiclesService: VehiclesService) {}
+  constructor(
+    private readonly vehiclesBrandService: VehicleBrandsService,
+    private readonly vehiclesService: VehiclesService
+  ) {}
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -49,6 +59,31 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadVehicles();
+  }
+
+  loadVehicleBrands(): void {
+    this.vehiclesBrandService
+      .getVehicleBrands({ sortField: 'name', take: 10, page: this.currentPage })
+      .subscribe((response) => {
+        this.vehicleBrands = [...this.vehicleBrands, ...response.data];
+        this.currentPage++;
+      });
+  }
+
+  onDropdownOpened(isOpened: boolean): void {
+    if (isOpened) {
+      this.brandDropdown.panel.nativeElement.addEventListener(
+        'scroll',
+        this.onScroll.bind(this)
+      );
+    }
+  }
+
+  onScroll(): void {
+    const dropdown = this.brandDropdown.panel.nativeElement;
+    if (dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight) {
+      this.loadVehicleBrands();
+    }
   }
 
   editVehicle(vehicle: VehicleDto): void {

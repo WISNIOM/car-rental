@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import {
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -37,6 +38,7 @@ import { CustomValidators } from '../../../../src/validators/custom-validators';
 })
 export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @Output() vehicleCreated = new EventEmitter<void>();
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
@@ -114,7 +116,7 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         console.log(response);
         this.vehicleCreated.emit();
-        this.vehicleForm.reset();
+        this.formGroupDirective.resetForm();
       });
   }
 }

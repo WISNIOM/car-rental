@@ -2,7 +2,7 @@
   (vehicleCreated)="onVehicleCreated()"
 ></app-create-vehicle-form>
 <div *ngIf="vehicles">
-  <div>
+  <div id="vehicles-list-navbar">
     <h2>Vehicle List</h2>
     <button mat-icon-button>
       <mat-icon>add</mat-icon>
@@ -23,7 +23,14 @@
           >{{ element.brand }}
         </ng-container>
         <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id"
-          >Edytuj
+          >
+          <mat-form-field>
+            <mat-select [(value)]="element.brand">
+              <mat-option *ngFor="let brand of vehicleBrands" [value]="brand">
+                {{ brand }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </ng-container>
       </td>
     </ng-container>
@@ -40,7 +47,7 @@
           {{ element.vehicleIdentificationNumber }}
         </ng-container>
         <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id">
-          Edytuj numer VIN
+          <input matInput [(ngModel)]="editedVehicle.vehicleIdentificationNumber" name="vehicleIdentificationNumber" />
         </ng-container>
       </td>
     </ng-container>
@@ -57,7 +64,7 @@
           {{ element.registrationNumber }}
         </ng-container>
         <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id">
-          Edytuj numer Rejestracyjny
+          <input matInput [(ngModel)]="editedVehicle.registrationNumber" name="registrationNumber" />
         </ng-container>
       </td>
     </ng-container>
@@ -72,7 +79,7 @@
           {{ element.clientEmail }}
         </ng-container>
         <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id">
-          Edytuj email Klienta
+          <input matInput [(ngModel)]="editedVehicle.clientEmail" name="clientEmail" />
         </ng-container>
       </td>
     </ng-container>
@@ -87,7 +94,7 @@
           {{ element.clientAddress }}
         </ng-container>
         <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id">
-          Edytuj adres Klienta
+          <input matInput [(ngModel)]="editedVehicle.clientAddress" name="clientAddress" />
         </ng-container>
       </td>
     </ng-container>
