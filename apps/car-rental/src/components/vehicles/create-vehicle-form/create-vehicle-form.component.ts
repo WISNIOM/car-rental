@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import {
   FormControl,
   FormGroup,
-  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -28,10 +27,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 import {
   MatSnackBar,
-  MatSnackBarAction,
-  MatSnackBarActions,
-  MatSnackBarLabel,
-  MatSnackBarRef,
 } from '@angular/material/snack-bar';
 
 @Component({
@@ -49,9 +44,8 @@ import {
   templateUrl: './create-vehicle-form.component.html',
   styleUrl: './create-vehicle-form.component.scss',
 })
-export class CreateVehicleFormComponent implements OnInit, OnDestroy {
+export class CreateVehicleFormComponent implements OnInit {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
-  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @Output() vehicleCreated = new EventEmitter<void>();
   private _snackBar = inject(MatSnackBar);
   vehicleForm: FormGroup;
@@ -93,13 +87,6 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
     this.loadVehicleBrands();
   }
 
-  ngOnDestroy(): void {
-    this.brandDropdown.panel.nativeElement.removeEventListener(
-      'scroll',
-      this.onScroll.bind(this)
-    );
-  }
-
   onDropdownOpened(isOpened: boolean): void {
     if (isOpened) {
       this.brandDropdown.panel.nativeElement.addEventListener(
@@ -137,16 +124,21 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next: (response) => {
-          console.log(response);
+        next: () => {
           this.vehicleCreated.emit();
-          this.formGroupDirective.resetForm();
+          this._snackBar.open(
+            'Stworzono samochód.🥳',
+            'Zamknij',
+            {
+              duration: 3000,
+            }
+          );
           this.dialogRef.close('vehicleCreated');
         },
         error: (error) => {
           if (error.error.status === 409) {
             this._snackBar.open(
-              'Samochód o podanym numerze rejestracyjnym lub numerze VIN już istnieje.',
+              'Samochód o podanym numerze rejestracyjnym lub numerze VIN już istnieje.😥',
               'Zamknij',
               {
                 duration: 3000,
