@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  inject,
   OnDestroy,
   OnInit,
   Output,
@@ -22,6 +23,16 @@ import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { VehiclesService } from '../../../../src/services/vehicles.service';
 import { MatButtonModule } from '@angular/material/button';
 import { CustomValidators } from '../../../../src/validators/custom-validators';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { finalize } from 'rxjs';
+import {
+  MatSnackBar,
+  MatSnackBarAction,
+  MatSnackBarActions,
+  MatSnackBarLabel,
+  MatSnackBarRef,
+} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-create-vehicle-form',
@@ -32,6 +43,8 @@ import { CustomValidators } from '../../../../src/validators/custom-validators';
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './create-vehicle-form.component.html',
   styleUrl: './create-vehicle-form.component.scss',
@@ -40,13 +53,17 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @Output() vehicleCreated = new EventEmitter<void>();
+  private _snackBar = inject(MatSnackBar);
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
+  isLoading = false;
+  error: { error: string; status: number } | null = null;
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
-    private readonly vehiclesService: VehiclesService
+    private readonly vehiclesService: VehiclesService,
+    private dialogRef: MatDialogRef<CreateVehicleFormComponent>
   ) {
     this.vehicleForm = new FormGroup({
       brand: new FormControl('', [Validators.required]),
@@ -111,12 +128,32 @@ export class CreateVehicleFormComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const { brand, registrationNumber, vehicleIdentificationNumber } =
       this.vehicleForm.value;
+    this.isLoading = true;
     this.vehiclesService
       .createVehicle({ brand, registrationNumber, vehicleIdentificationNumber })
-      .subscribe((response) => {
-        console.log(response);
-        this.vehicleCreated.emit();
-        this.formGroupDirective.resetForm();
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+          this.vehicleCreated.emit();
+          this.formGroupDirective.resetForm();
+          this.dialogRef.close('vehicleCreated');
+        },
+        error: (error) => {
+          if (error.error.status === 409) {
+            this._snackBar.open(
+              'Samochód o podanym numerze rejestracyjnym lub numerze VIN już istnieje.',
+              'Zamknij',
+              {
+                duration: 3000,
+              }
+            );
+          }
+        },
       });
   }
 }

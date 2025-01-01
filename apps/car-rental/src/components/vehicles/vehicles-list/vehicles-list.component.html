@@ -1,10 +1,7 @@
-<app-create-vehicle-form
-  (vehicleCreated)="onVehicleCreated()"
-></app-create-vehicle-form>
 <div *ngIf="vehicles">
   <div id="vehicles-list-navbar">
     <h2>Vehicle List</h2>
-    <button mat-icon-button>
+    <button mat-icon-button (click)="openCreateVehicleFormDialog()">
       <mat-icon>add</mat-icon>
     </button>
   </div>

@@ -1,9 +1,23 @@
 form {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 mat-form-field {
-  width: 25%;
+  width: 100%;
+}
+
+.center {
+  display: flex; 
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+.error {
+  color: red;
+  width: 300px;
 }

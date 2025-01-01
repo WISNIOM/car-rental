@@ -1,4 +1,10 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehiclesService } from '../../../services/vehicles.service';
 import { VehicleDto } from '../../../dtos/vehicle';
@@ -9,10 +15,11 @@ import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicl
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatIconButton } from '@angular/material/button';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -26,7 +33,8 @@ import { MatSelect, MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatPaginatorModule,
     MatDividerModule,
-    CreateVehicleFormComponent,
+    MatButtonModule,
+    MatDialogModule,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.scss',
@@ -47,6 +55,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
   currentPage = 1;
+  readonly dialog = inject(MatDialog);
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
@@ -59,6 +68,18 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadVehicles();
+  }
+
+  openCreateVehicleFormDialog(): void {
+    const dialogRef = this.dialog.open(CreateVehicleFormComponent, {
+      width: '800px',
+      height: '400px',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'vehicleCreated') {
+        this.loadVehicles();
+      }
+    });
   }
 
   loadVehicleBrands(): void {
@@ -105,9 +126,5 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     this.vehiclesService.getVehicles().subscribe((response) => {
       this.vehicles = [...response.data];
     });
-  }
-
-  onVehicleCreated(): void {
-    this.loadVehicles();
   }
 }
