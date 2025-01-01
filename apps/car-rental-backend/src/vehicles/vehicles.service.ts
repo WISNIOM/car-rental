@@ -91,14 +91,19 @@ export class VehiclesService {
     const { order, take, skip, sortField } = pageOptionsDto;
     const queryBuilder = this.vehiclesRepository.createQueryBuilder('vehicle');
     queryBuilder.leftJoinAndSelect('vehicle.brand', 'brand');
-    const vehicleSortField =
-      sortField && sortField in VehicleDto
-        ? `vehicle.${sortField}`
-        : 'vehicle.id';
+    let vehicleSortField = 'vehicle.id';
+    if (sortField) {
+      if (sortField === 'brandName') {
+        vehicleSortField = 'brand.name';
+      } else if (sortField in VehicleDto) {
+        vehicleSortField = `vehicle.${sortField}`;
+      }
+    }
     queryBuilder.orderBy(vehicleSortField, order).skip(skip).take(take);
     this.logger.log(
       `Finding vehicles with page options ${JSON.stringify(pageOptionsDto)}`
     );
+    const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
     this.logger.log(`Found ${entities.length} vehicles`);
     const mappedEntities: Array<VehicleDto> = entities.map((entity) => {
@@ -106,7 +111,7 @@ export class VehiclesService {
       return { ...rest, brand: brand.name };
     });
     const pageMetaDto = new PageMetaDto({
-      itemCount: entities.length,
+      itemCount,
       pageOptionsDto,
     });
     return new PageDto(mappedEntities, pageMetaDto);

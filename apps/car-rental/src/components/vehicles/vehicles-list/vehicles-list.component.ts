@@ -12,7 +12,11 @@ import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicle-form.component';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
@@ -21,6 +25,8 @@ import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.se
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NotificationService } from '../../../../src/services/notification.service';
+import { finalize } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -36,12 +42,14 @@ import { NotificationService } from '../../../../src/services/notification.servi
     MatDividerModule,
     MatButtonModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.scss',
 })
 export class VehiclesListComponent implements OnInit, AfterViewInit {
-  vehicles: VehicleDto[] = [];
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('brandDropdown') brandDropdown!: MatSelect;
   vehicleBrands: VehicleBrandDto[] = [];
   displayedColumns: string[] = [
     'brand',
@@ -52,11 +60,14 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     'actions',
   ];
   editedVehicle: VehicleDto | null = null;
-  dataSource = new MatTableDataSource<VehicleDto>(this.vehicles);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('brandDropdown') brandDropdown!: MatSelect;
-  currentPage = 1;
+  dataSource = new MatTableDataSource<VehicleDto>([]);
+  currentBrandPage = 1;
+  pageSize = 10;
+  pageBrandsSize = 10;
+  totalRecords = 0;
+  pageIndex = 0;
   readonly dialog = inject(MatDialog);
+  isLoading = false;
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
@@ -86,11 +97,48 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   loadVehicleBrands(): void {
     this.vehiclesBrandService
-      .getVehicleBrands({ sortField: 'name', take: 10, page: this.currentPage })
+      .getVehicleBrands({
+        sortField: 'name',
+        take: this.pageBrandsSize,
+        page: this.currentBrandPage,
+      })
       .subscribe((response) => {
         this.vehicleBrands = [...this.vehicleBrands, ...response.data];
-        this.currentPage++;
+        this.currentBrandPage++;
       });
+  }
+
+  loadVehicles(): void {
+    this.isLoading = true;
+    this.vehiclesService
+      .getVehicles({
+        sortField: 'brandName',
+        take: this.pageSize,
+        page: this.pageIndex + 1,
+      })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.dataSource.data = response.data;
+          this.totalRecords = response.meta.itemCount;
+          console.log('Załadowano dane:', this.dataSource.data);
+        },
+        error: (error) => {
+          this.notificationService.showError(
+            'Nie udało się załadować pojazdów. 😢'
+          );
+        },
+      });
+  }
+
+  pageChangeEvent(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadVehicles();
   }
 
   onDropdownOpened(isOpened: boolean): void {
@@ -135,12 +183,5 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   cancelEditing(): void {
     this.editedVehicle = null;
-  }
-
-  loadVehicles(): void {
-    this.vehiclesService.getVehicles().subscribe((response) => {
-      this.vehicles = [...response.data];
-      this.dataSource.data = this.vehicles;
-    });
   }
 }

@@ -48,9 +48,10 @@ export class VehicleBrandsService {
         : 'vehicleBrand.id';
     queryBuilder.orderBy(vehicleBrandSortField, order).skip(skip).take(take);
     this.logger.log(`Finding vehicle brands with page options: ${JSON.stringify(pageOptionsDto)}`);
+    const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
     this.logger.log(`Found ${entities.length} vehicle brands`);
-    const pageMetaDto = new PageMetaDto({ itemCount: entities.length, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
     return new PageDto(entities, pageMetaDto);
   }
 

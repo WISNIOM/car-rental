@@ -17,3 +17,11 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.center {
+  display: flex; 
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  height: 100%;
+}
