@@ -92,10 +92,19 @@ export class VehiclesService {
     const queryBuilder = this.vehiclesRepository.createQueryBuilder('vehicle');
     queryBuilder.leftJoinAndSelect('vehicle.brand', 'brand');
     let vehicleSortField = 'vehicle.id';
+    const allowedSortFields: Array<VehicleField> = [
+      'clientAddress',
+      'clientEmail',
+      'registrationNumber',
+      'vehicleIdentificationNumber',
+      'id',
+      'createdAt',
+      'updatedAt',
+    ];
     if (sortField) {
       if (sortField === 'brandName') {
         vehicleSortField = 'brand.name';
-      } else if (sortField in VehicleDto) {
+      } else if (allowedSortFields.includes(sortField as VehicleField)) {
         vehicleSortField = `vehicle.${sortField}`;
       }
     }
