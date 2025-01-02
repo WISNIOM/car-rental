@@ -3,15 +3,10 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VehiclesService } from '../../../services/vehicles.service';
-import { VehicleDto } from '../../../dtos/vehicle';
-import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicle-form.component';
 import {
   MatPaginator,
   MatPaginatorModule,
@@ -21,18 +16,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
-import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { NotificationService } from '../../../../src/services/notification.service';
-import { finalize } from 'rxjs';
+import { merge, tap } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+
+import { VehiclesService } from '../../../services/vehicles.service';
+import { VehicleDto } from '../../../dtos/vehicle';
+import { VehicleBrandDto } from '../../../dtos/vehicle-brand';
+import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicle-form.component';
+import { NotificationService } from '../../../../src/services/notification.service';
+import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
+import { Order } from '../../../../src/enums/order';
 
 @Component({
   selector: 'app-vehicles-list',
   imports: [
     CommonModule,
     MatTableModule,
+    MatFormFieldModule,
     MatMenuModule,
     FormsModule,
     MatSelectModule,
@@ -43,6 +47,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatSortModule,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.scss',
@@ -50,9 +55,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class VehiclesListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
+  @ViewChild(MatSort) sort!: MatSort;
   vehicleBrands: VehicleBrandDto[] = [];
   displayedColumns: string[] = [
-    'brand',
+    'brandName',
     'registrationNumber',
     'vehicleIdentificationNumber',
     'clientEmail',
@@ -60,26 +66,32 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     'actions',
   ];
   editedVehicle: VehicleDto | null = null;
+  vehicleCopy: VehicleDto | null = null;
   dataSource = new MatTableDataSource<VehicleDto>([]);
   currentBrandPage = 1;
   pageSize = 10;
   pageBrandsSize = 10;
   totalRecords = 0;
   pageIndex = 0;
-  readonly dialog = inject(MatDialog);
-  isLoading = false;
+  activeSort = 'brandName';
+  directionSort = Order.ASC;
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
     private readonly vehiclesService: VehiclesService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly dialog: MatDialog
   ) {}
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    this.sort.sortChange.subscribe((sort: Sort) => this.onSortChange(sort));
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(tap(() => this.loadVehicles()))
+      .subscribe();
   }
 
   ngOnInit(): void {
+    this.loadVehicleBrands();
     this.loadVehicles();
   }
 
@@ -109,25 +121,19 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   }
 
   loadVehicles(): void {
-    this.isLoading = true;
     this.vehiclesService
       .getVehicles({
-        sortField: 'brandName',
+        sortField: this.activeSort,
         take: this.pageSize,
         page: this.pageIndex + 1,
+        order: this.directionSort,
       })
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
       .subscribe({
         next: (response) => {
           this.dataSource.data = response.data;
           this.totalRecords = response.meta.itemCount;
-          console.log('Załadowano dane:', this.dataSource.data);
         },
-        error: (error) => {
+        error: () => {
           this.notificationService.showError(
             'Nie udało się załadować pojazdów. 😢'
           );
@@ -138,7 +144,6 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   pageChangeEvent(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadVehicles();
   }
 
   onDropdownOpened(isOpened: boolean): void {
@@ -148,6 +153,13 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
         this.onScroll.bind(this)
       );
     }
+  }
+
+  onSortChange(sort: Sort): void {
+    this.paginator.pageIndex = 0;
+    this.pageIndex = 0;
+    this.activeSort = sort.active;
+    this.directionSort = sort.direction.toUpperCase() as Order;
   }
 
   onScroll(): void {
@@ -161,6 +173,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     // Implement edit vehicle logic here
     console.log('Edit vehicle:', vehicle);
     this.editedVehicle = vehicle;
+    this.vehicleCopy = { ...vehicle };
   }
 
   removeVehicle(vehicle: VehicleDto): void {
@@ -181,7 +194,37 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  confirmEditing(): void {
+    // if (this.editedVehicle && this.vehicleCopy) {
+    //   this.vehiclesService
+    //     .updateVehicle(this.editedVehicle.id, this.vehicleCopy)
+    //     .subscribe({
+    //       next: () => {
+    //         this.notificationService.showSuccess('Pojazd został zaktualizowany. 🚗');
+    //         this.loadVehicles();
+    //         this.editedVehicle = null;
+    //         this.vehicleCopy = null;
+    //       },
+    //       error: (error) => {
+    //         if (error.error.status === 404) {
+    //           this.notificationService.showError(
+    //             'Nie znaleziono takiego pojazdu. 😥'
+    //           );
+    //           return;
+    //         }
+    //         this.notificationService.showError(
+    //           'Nie udało się zaktualizować pojazdu. 😢'
+    //         );
+    //       },
+    //     });
+    console.log('Confirm editing:', this.vehicleCopy);
+    this.editedVehicle = null;
+    this.vehicleCopy = null;
+    this.notificationService.showSuccess('Pojazd został zaktualizowany. 🚗');
+  }
+
   cancelEditing(): void {
     this.editedVehicle = null;
+    this.vehicleCopy = null;
   }
 }
