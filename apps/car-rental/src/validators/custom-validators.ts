@@ -1,5 +1,42 @@
-import { ValidatorFn, AbstractControl } from '@angular/forms';
+/* eslint-disable @angular-eslint/directive-selector */
+import { Directive, Input } from '@angular/core';
+import { NG_VALIDATORS, Validator, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
 
+@Directive({
+  selector: '[doesNotContainPolishLetters]',
+  standalone: true,
+  providers: [{ provide: NG_VALIDATORS, useExisting: DoesNotContainPolishLettersDirective, multi: true }]
+})
+export class DoesNotContainPolishLettersDirective implements Validator {
+  validate(control: AbstractControl): ValidationErrors | null {
+    return CustomValidators.doesNotContainPolishLetters()(control);
+  }
+}
+
+@Directive({
+  selector: '[doesContainOnlyDigitsAndUppercaseLetters]',
+  standalone: true,
+  providers: [{ provide: NG_VALIDATORS, useExisting: DoesContainOnlyDigitsAndUppercaseLettersDirective, multi: true }]
+})
+export class DoesContainOnlyDigitsAndUppercaseLettersDirective implements Validator {
+  validate(control: AbstractControl): ValidationErrors | null {
+    return CustomValidators.doesContainOnlyDigitsAndUppercaseLetters()(control);
+  }
+}
+
+@Directive({
+  selector: '[doesNotContainSpecificLetters]',
+  standalone: true,
+  providers: [{ provide: NG_VALIDATORS, useExisting: DoesNotContainSpecificLettersDirective, multi: true }]
+})
+export class DoesNotContainSpecificLettersDirective implements Validator {
+  @Input('doesNotContainSpecificLetters') letters: string[] = [];
+  @Input() letterIndex = 0;
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    return CustomValidators.doesNotContainSpecificLetters(this.letters, this.letterIndex)(control);
+  }
+}
 export class CustomValidators {
   static doesNotContainPolishLetters(): ValidatorFn {
     return (control: AbstractControl) => {
@@ -30,7 +67,7 @@ export class CustomValidators {
       if (!letters) {
         return null;
       }
-      if (letterIndex && value) {
+      if (value) {
         if (letterIndex > value.length) {
           return null;
         }

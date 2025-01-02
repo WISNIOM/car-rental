@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 import { DoesContainOnlyDigitsAndUppercaseLetters } from '../../common/validators/does-contain-only-digits-and-uppercase-letters.decorator';
 import { DoesNotContainSpecificLetters } from '../../common/validators/does-not-contain-specific-letters.decorator';
 import { IsFirstLetterUppercase } from '../../common/validators/is-first-letter-uppercase.decorator';
@@ -67,6 +67,7 @@ export class VehicleDto {
   vehicleIdentificationNumber: string;
 
   @IsEmail({}, { message: 'Invalid email format.' })
+  @IsOptional()
   @ApiProperty({
     example: 'test@example.com',
     description: 'The email address of the client.',
@@ -74,12 +75,13 @@ export class VehicleDto {
   })
   clientEmail: string;
   @IsString()
-  @Length(10, 100, {
-    message: 'The address must be between 10 and 100 characters.',
+  @IsOptional()
+  @Length(0, 100, {
+    message: 'The address must contain max 100 characters.',
   })
   @ApiProperty({
     example: 'Bielsko-Biała, ul. Cieszyńska 1',
-    description: 'The address of the client.',
+    description: 'The address of the client. Max length is 100 characters.',
     type: 'string',
   })
   clientAddress: string;

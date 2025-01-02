@@ -13,6 +13,7 @@ import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
       username: 'root',
       password: 'root',
       database: 'car_rental',
+      charset: 'utf8mb4',
       entities: [Vehicle, VehicleBrand],
       synchronize: true,
     }),

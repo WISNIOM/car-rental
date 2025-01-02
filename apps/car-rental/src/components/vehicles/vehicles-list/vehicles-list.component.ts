@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -15,7 +10,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { merge, tap } from 'rxjs';
@@ -31,6 +26,11 @@ import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicl
 import { NotificationService } from '../../../../src/services/notification.service';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { Order } from '../../../../src/enums/order';
+import {
+  DoesContainOnlyDigitsAndUppercaseLettersDirective,
+  DoesNotContainPolishLettersDirective,
+  DoesNotContainSpecificLettersDirective,
+} from '../../../../src/validators/custom-validators';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -50,6 +50,9 @@ import { Order } from '../../../../src/enums/order';
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSortModule,
+    DoesContainOnlyDigitsAndUppercaseLettersDirective,
+    DoesNotContainPolishLettersDirective,
+    DoesNotContainSpecificLettersDirective,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.scss',
@@ -58,6 +61,12 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('brandDropdown') brandDropdown!: MatSelect;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('registrationNumberInput') registrationNumberInput!: NgModel;
+  @ViewChild('vehicleIdentificationNumberInput')
+  vehicleIdentificationNumberInput!: NgModel;
+  @ViewChild('clientEmailInput') clientEmailInput!: NgModel;
+  @ViewChild('clientAddressInput') clientAddressInput!: NgModel;
+
   vehicleBrands: VehicleBrandDto[] = [];
   displayedColumns: string[] = [
     'brandName',
@@ -146,6 +155,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   pageChangeEvent(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.cancelEditing();
   }
 
   onDropdownOpened(isOpened: boolean): void {
@@ -162,6 +172,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     this.pageIndex = 0;
     this.activeSort = sort.active;
     this.directionSort = sort.direction.toUpperCase() as Order;
+    this.cancelEditing();
   }
 
   onScroll(): void {
@@ -196,33 +207,174 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  checkRegistrationNumberInput(): boolean {
+    if (this.registrationNumberInput.errors) {
+      if (
+        this.registrationNumberInput.errors[
+          'doesContainOnlyDigitsAndUppercaseLetters'
+        ]
+      ) {
+        this.notificationService.showError(
+          'Numer rejestracyjny musi składać się tylko z wielkich liter i cyfr. 😥'
+        );
+        return false;
+      }
+      if (this.registrationNumberInput.errors['required']) {
+        this.notificationService.showError(
+          'Numer rejestracyjny jest wymagany. 😥'
+        );
+        return false;
+      }
+      if (this.registrationNumberInput.errors['minlength']) {
+        this.notificationService.showError(
+          'Numer rejestracyjny musi mieć co najmniej 6 znaków. 😥'
+        );
+        return false;
+      }
+      if (this.registrationNumberInput.errors['maxlength']) {
+        this.notificationService.showError(
+          'Numer rejestracyjny może mieć maksymalnie 7 znaków. 😥'
+        );
+        return false;
+      }
+      if (
+        this.registrationNumberInput.errors[
+          'doesContainOnlyDigitsAndUppercaseLetters'
+        ]
+      ) {
+        this.notificationService.showError(
+          'Numer rejestracyjny może składać się tylko z wielkich liter i cyfr. 😥'
+        );
+        return false;
+      }
+      if (this.registrationNumberInput.errors['doesNotContainPolishLetters']) {
+        this.notificationService.showError(
+          'Numer rejestracyjny może składać się tylko z polskich znaków. 😥'
+        );
+        return false;
+      }
+      if (
+        this.registrationNumberInput.errors['doesNotContainSpecificLetters']
+      ) {
+        this.notificationService.showError(
+          'Numer nie może zawierać liter I, O, Q. 😥'
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  checkVehicleIdentificationNumberInput(): boolean {
+    if (this.vehicleIdentificationNumberInput.errors) {
+      if (
+        this.vehicleIdentificationNumberInput.errors[
+          'doesContainOnlyDigitsAndUppercaseLetters'
+        ]
+      ) {
+        this.notificationService.showError(
+          'Numer VIN musi składać się tylko z wielkich liter i cyfr. 😥'
+        );
+        return false;
+      }
+      if (this.vehicleIdentificationNumberInput.errors['required']) {
+        this.notificationService.showError('Numer VIN jest wymagany. 😥');
+        return false;
+      }
+      if (this.vehicleIdentificationNumberInput.errors['minlength']) {
+        this.notificationService.showError(
+          'Numer VIN musi mieć dokładnie 17 znaków. 😥'
+        );
+        return false;
+      }
+      if (this.vehicleIdentificationNumberInput.errors['maxlength']) {
+        this.notificationService.showError(
+          'Numer VIN musi mieć dokładnie 17 znaków. 😥'
+        );
+        return false;
+      }
+      if (
+        this.vehicleIdentificationNumberInput.errors[
+          'doesNotContainPolishLetters'
+        ]
+      ) {
+        this.notificationService.showError(
+          'Numer VIN nie może zawierać polskich znaków. 😥'
+        );
+        return false;
+      }
+      if (
+        this.vehicleIdentificationNumberInput.errors[
+          'doesNotContainSpecificLetters'
+        ]
+      ) {
+        this.notificationService.showError(
+          'Numer VIN nie może zawierać liter I, O, Q. 😥'
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  checkClientEmailInput(): boolean {
+    if (this.clientEmailInput.errors) {
+      if (this.clientEmailInput.errors['email']) {
+        this.notificationService.showError(
+          'Email klienta jest niepoprawny. 😥'
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  checkClientAddressInput(): boolean {
+    if (this.clientAddressInput.errors) {
+      if (this.clientAddressInput.errors['maxlength']) {
+        this.notificationService.showError(
+          'Adres klienta może mieć maksymalnie 100 znaków. 😥'
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
   confirmEditing(): void {
-    // if (this.editedVehicle && this.vehicleCopy) {
-    //   this.vehiclesService
-    //     .updateVehicle(this.editedVehicle.id, this.vehicleCopy)
-    //     .subscribe({
-    //       next: () => {
-    //         this.notificationService.showSuccess('Pojazd został zaktualizowany. 🚗');
-    //         this.loadVehicles();
-    //         this.editedVehicle = null;
-    //         this.vehicleCopy = null;
-    //       },
-    //       error: (error) => {
-    //         if (error.error.status === 404) {
-    //           this.notificationService.showError(
-    //             'Nie znaleziono takiego pojazdu. 😥'
-    //           );
-    //           return;
-    //         }
-    //         this.notificationService.showError(
-    //           'Nie udało się zaktualizować pojazdu. 😢'
-    //         );
-    //       },
-    //     });
-    console.log('Confirm editing:', this.vehicleCopy);
-    this.editedVehicle = null;
-    this.vehicleCopy = null;
-    this.notificationService.showSuccess('Pojazd został zaktualizowany. 🚗');
+    if (
+      !this.checkRegistrationNumberInput() ||
+      !this.checkVehicleIdentificationNumberInput() ||
+      !this.checkClientEmailInput() ||
+      !this.checkClientAddressInput()
+    ) {
+      return;
+    }
+    if (this.editedVehicle && this.vehicleCopy) {
+      this.vehiclesService
+        .updateVehicle(this.editedVehicle.id, this.vehicleCopy)
+        .subscribe({
+          next: () => {
+            this.notificationService.showSuccess(
+              'Pojazd został zaktualizowany. 🚗'
+            );
+            this.editedVehicle = null;
+            this.vehicleCopy = null;
+            this.loadVehicles();
+          },
+          error: (error) => {
+            if (error.error.status === 404) {
+              this.notificationService.showError(
+                'Nie znaleziono takiego pojazdu. 😥'
+              );
+              return;
+            }
+            this.notificationService.showError(
+              'Nie udało się zaktualizować pojazdu. 😢'
+            );
+          },
+        });
+    }
   }
 
   cancelEditing(): void {

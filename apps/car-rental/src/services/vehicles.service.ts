@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateVehicleDto, VehicleDto } from '../dtos/vehicle';
+import { CreateVehicleDto, UpdateVehicleDto, VehicleDto } from '../dtos/vehicle';
 import { Page } from '../dtos/page';
 import { PageOptions } from '../dtos/page-options';
 
@@ -27,6 +27,10 @@ export class VehiclesService {
       params = params.set('take', opts.take.toString());
     }
     return this.http.get<Page<VehicleDto>>(this.apiUrl, { params });
+  }
+
+  updateVehicle(id: number, vehicle: UpdateVehicleDto): Observable<VehicleDto> {
+    return this.http.patch<VehicleDto>(`${this.apiUrl}/${id}`, vehicle);
   }
 
   createVehicle(vehicle: CreateVehicleDto): Observable<VehicleDto> {

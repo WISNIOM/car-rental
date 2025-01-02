@@ -146,10 +146,10 @@ export class VehiclesService {
     this.logger.log(
       `Checking if vehicle with such registrationNumber/vehicleIdentificationNumber already exists`
     );
-    const vehicle = await this.vehiclesRepository.find({
+    const [vehicle] = await this.vehiclesRepository.find({
       where: [{ registrationNumber }, { vehicleIdentificationNumber }],
     });
-    if (vehicle.length) {
+    if (vehicle && vehicle.id !== id) {
       this.logger.error(
         'Vehicle with such registrationNumber/vehicleIdentificationNumber already exists'
       );
@@ -162,7 +162,7 @@ export class VehiclesService {
         HttpStatus.CONFLICT
       );
     }
-    this.logger.log(`Updating vehicle with ${id}`);
+    this.logger.log(`Updating vehicle with id ${id}`);
     await this.vehiclesRepository.save({
       id,
       ...updateVehicleDto,
