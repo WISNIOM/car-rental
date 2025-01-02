@@ -64,16 +64,16 @@
             {{ element.registrationNumber }}
           </ng-container>
           <ng-container
-            *ngIf="editedVehicle && editedVehicle.id === element.id"
+            *ngIf="editedVehicle && editedVehicle.id === element.id && vehicleCopy"
           >
-            <!-- <mat-form-field>
+            <mat-form-field>
                 <mat-label>Numer Rejestracyjny</mat-label>
                 <input
                   matInput
-                  [(ngModel)]="editedVehicle.registrationNumber"
+                  [(ngModel)]="vehicleCopy.registrationNumber"
                   name="registrationNumber"
                 />
-              </mat-form-field> -->
+              </mat-form-field>
           </ng-container>
         </td>
       </ng-container>
@@ -90,16 +90,16 @@
             {{ element.vehicleIdentificationNumber }}
           </span>
           <ng-container
-            *ngIf="editedVehicle && editedVehicle.id === element.id"
+            *ngIf="editedVehicle && editedVehicle.id === element.id && vehicleCopy"
           >
-            <!-- <mat-form-field>
+            <mat-form-field>
                 <mat-label>Numer VIN</mat-label>
                 <input
                   matInput
-                  [(ngModel)]="editedVehicle.vehicleIdentificationNumber"
+                  [(ngModel)]="vehicleCopy.vehicleIdentificationNumber"
                   name="vehicleIdentificationNumber"
                 />
-              </mat-form-field> -->
+              </mat-form-field>
           </ng-container>
         </td>
       </ng-container>
@@ -116,16 +116,16 @@
             {{ element.clientEmail }}
           </ng-container>
           <ng-container
-            *ngIf="editedVehicle && editedVehicle.id === element.id"
+            *ngIf="editedVehicle && editedVehicle.id === element.id && vehicleCopy"
           >
-            <!-- <mat-form-field>
+            <mat-form-field>
                 <mat-label>Email Klienta</mat-label>
                 <input
                   matInput
-                  [(ngModel)]="editedVehicle.clientEmail"
+                  [(ngModel)]="vehicleCopy.clientEmail"
                   name="clientEmail"
                 />
-              </mat-form-field> -->
+              </mat-form-field>
           </ng-container>
         </td>
       </ng-container>
@@ -142,16 +142,16 @@
             {{ element.clientAddress }}
           </ng-container>
           <ng-container
-            *ngIf="editedVehicle && editedVehicle.id === element.id"
+            *ngIf="editedVehicle && editedVehicle.id === element.id && vehicleCopy"
           >
-            <!-- <mat-form-field>
+            <mat-form-field>
                 <mat-label>Adres Klienta</mat-label>
                 <input
                   matInput
-                  [(ngModel)]="editedVehicle.clientAddress"
+                  [(ngModel)]="vehicleCopy.clientAddress"
                   name="clientAddress"
                 />
-              </mat-form-field> -->
+              </mat-form-field>
           </ng-container>
         </td>
       </ng-container>

@@ -22,6 +22,7 @@ import { merge, tap } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
 
 import { VehiclesService } from '../../../services/vehicles.service';
 import { VehicleDto } from '../../../dtos/vehicle';
@@ -37,6 +38,7 @@ import { Order } from '../../../../src/enums/order';
     CommonModule,
     MatTableModule,
     MatFormFieldModule,
+    MatInputModule,
     MatMenuModule,
     FormsModule,
     MatSelectModule,
