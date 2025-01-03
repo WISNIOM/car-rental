@@ -1,24 +1,7 @@
-CREATE TABLE IF NOT EXISTS brands (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE car_rental;
 
-CREATE TABLE IF NOT EXISTS vehicles (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    brand INT,
-    vehicleIdentificationNumber VARCHAR(255) NOT NULL,
-    registrationNumber VARCHAR(255) NOT NULL,
-    clientEmail VARCHAR(255),
-    clientAddress VARCHAR(255),
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP FOREIGN KEY (brand) REFERENCES brands(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Insert data into brands table
 INSERT INTO
-    brands (name)
+    vehicle_brands (name)
 VALUES
     ('Volkswagen'),
     ('Audi'),
@@ -66,7 +49,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Volkswagen'
         ),
@@ -80,7 +63,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Audi'
         ),
@@ -94,7 +77,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Porsche'
         ),
@@ -108,7 +91,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Skoda'
         ),
@@ -122,7 +105,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Fiat'
         ),
@@ -136,7 +119,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'BMW'
         ),
@@ -150,7 +133,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Mercedes-Benz'
         ),
@@ -164,7 +147,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Toyota'
         ),
@@ -178,7 +161,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Honda'
         ),
@@ -192,7 +175,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Ford'
         ),
@@ -206,7 +189,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Chevrolet'
         ),
@@ -220,7 +203,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Nissan'
         ),
@@ -234,7 +217,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Hyundai'
         ),
@@ -248,7 +231,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Kia'
         ),
@@ -262,7 +245,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Mazda'
         ),
@@ -276,7 +259,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Subaru'
         ),
@@ -290,7 +273,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Jaguar'
         ),
@@ -304,7 +287,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Land Rover'
         ),
@@ -318,7 +301,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Volvo'
         ),
@@ -332,7 +315,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Mini'
         ),
@@ -346,7 +329,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Lexus'
         ),
@@ -360,7 +343,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Infiniti'
         ),
@@ -374,7 +357,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Acura'
         ),
@@ -388,7 +371,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Mitsubishi'
         ),
@@ -402,7 +385,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Tesla'
         ),
@@ -416,7 +399,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Jeep'
         ),
@@ -430,7 +413,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Chrysler'
         ),
@@ -444,7 +427,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Dodge'
         ),
@@ -458,7 +441,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Ram'
         ),
@@ -472,7 +455,7 @@ VALUES
             SELECT
                 id
             FROM
-                brands
+                vehicle_brands
             WHERE
                 name = 'Buick'
         ),

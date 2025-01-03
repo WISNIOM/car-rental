@@ -1,13 +1,8 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { VehicleBrand } from '../../vehicle-brands/entities/vehicle-brand.entity';
 import { AbstractEntity } from '../../common/entity/abstract.entity';
 
-@Entity()
+@Entity({ name: 'vehicles' })
 export class Vehicle extends AbstractEntity {
   @ManyToOne(() => VehicleBrand)
   @JoinColumn({ name: 'brand' })
