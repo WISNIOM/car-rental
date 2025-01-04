@@ -12,6 +12,8 @@ import { VehicleDto } from './dto/vehicle.dto';
 import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
 import { AddressesService } from '../addresses/addresses.service';
 import { Address } from '../addresses/entities/address.entity';
+import { AddressDto } from '../addresses/dto/address.dto';
+import { UpdateAddressDto } from '../addresses/dto/update-address.dto';
 
 describe('VehiclesService', () => {
   let service: VehiclesService;
@@ -193,10 +195,11 @@ describe('VehiclesService', () => {
       },
     };
     const vehicleBrand = { id: 1, name: 'Toyota' } as VehicleBrandDto;
-    it('should update a vehicle', async () => {
+    it('should update a vehicle and update the address', async () => {
       const id = 1;
       const updateVehicleDto: UpdateVehicleDto = {
         registrationNumber: 'XYZ789',
+        brand: 'Toyota',
         clientAddress: {
           id: 1,
           createdAt: new Date('2021-09-01T00:00:00.000Z'),
@@ -208,12 +211,125 @@ describe('VehiclesService', () => {
           street: 'ul. Cieszyńska 12',
         },
       };
+
+      const { id: addressId, ...addressData } =
+        updateVehicleDto.clientAddress as UpdateAddressDto;
+      const vehicleClientAddress = new Address();
+      vehicleClientAddress.id = 1;
       const vehicle = new Vehicle();
       vehicle.id = id;
       vehicle.registrationNumber = 'ABC123';
       vehicle.vehicleIdentificationNumber = 'ASDFGH1234567890';
-      vehicle.clientAddress = new Address();
-      vehicle.clientAddress.id = 1;
+      vehicle.clientAddress = vehicleClientAddress;
+
+      const vehicleBrand = new VehicleBrand();
+      vehicleBrand.name = 'Toyota';
+
+      jest
+        .spyOn(service, 'findOne')
+        .mockResolvedValueOnce(vehicle as unknown as VehicleDto)
+        .mockResolvedValueOnce(mockVehicleDto);
+      jest
+        .spyOn(vehicleBrandsService, 'findByName')
+        .mockResolvedValue(vehicleBrand);
+      jest
+        .spyOn(addressesService, 'findOne')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest
+        .spyOn(addressesService, 'update')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest
+        .spyOn(addressesService, 'create')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest.spyOn(addressesService, 'remove').mockResolvedValue(undefined);
+      jest.spyOn(vehiclesRepository, 'find').mockResolvedValue([]);
+      jest.spyOn(vehiclesRepository, 'save').mockResolvedValue(vehicle);
+
+      const result = await service.update(id, updateVehicleDto);
+      expect(result).toEqual(mockVehicleDto);
+      expect(vehicleBrandsService.findByName).toHaveBeenCalledWith(
+        updateVehicleDto.brand
+      );
+      expect(service.findOne).toHaveBeenCalledWith(id);
+      expect(addressesService.findOne).toHaveBeenCalledWith(
+        (updateVehicleDto.clientAddress as UpdateAddressDto).id
+      );
+      expect(addressesService.update).toHaveBeenCalledWith(
+        (updateVehicleDto.clientAddress as UpdateAddressDto).id,
+        addressData
+      );
+      expect(addressesService.create).not.toHaveBeenCalled();
+      expect(addressesService.remove).not.toHaveBeenCalled();
+    });
+
+    it('should update a vehicle and create the address', async () => {
+      const id = 1;
+      const updateVehicleDto: UpdateVehicleDto = {
+        registrationNumber: 'XYZ789',
+        clientAddress: {
+          city: 'Bielsko-Biała',
+          administrativeArea: 'Śląskie',
+          postalCode: '43-300',
+          country: 'Poland',
+          street: 'ul. Cieszyńska 12',
+        },
+      };
+      const vehicle = new Vehicle();
+      vehicle.id = id;
+      vehicle.registrationNumber = 'ABC123';
+      vehicle.vehicleIdentificationNumber = 'ASDFGH1234567890';
+
+      const clientAddress = new Address();
+      clientAddress.id = 1;
+
+      const vehicleBrand = new VehicleBrand();
+      vehicleBrand.name = 'Toyota';
+
+      jest
+        .spyOn(service, 'findOne')
+        .mockResolvedValue(vehicle as unknown as VehicleDto);
+      jest
+        .spyOn(vehicleBrandsService, 'findByName')
+        .mockResolvedValue(vehicleBrand);
+      jest.spyOn(addressesService, 'findOne').mockResolvedValue(undefined);
+      jest
+        .spyOn(addressesService, 'update')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest
+        .spyOn(addressesService, 'create')
+        .mockResolvedValue(clientAddress);
+      jest.spyOn(addressesService, 'remove').mockResolvedValue(undefined);
+      jest
+        .spyOn(vehicleBrandsService, 'findByName')
+        .mockResolvedValue(vehicleBrand);
+      jest.spyOn(service, 'findOne').mockResolvedValue(mockVehicleDto);
+      jest.spyOn(vehiclesRepository, 'find').mockResolvedValue([]);
+      jest.spyOn(vehiclesRepository, 'save').mockResolvedValue(vehicle);
+
+      const result = await service.update(id, updateVehicleDto);
+      expect(result).toEqual(mockVehicleDto);
+      expect(vehicleBrandsService.findByName).not.toHaveBeenCalledWith();
+      expect(service.findOne).toHaveBeenCalledWith(id);
+      expect(addressesService.findOne).not.toHaveBeenCalled();
+      expect(addressesService.update).not.toHaveBeenCalled();
+      expect(addressesService.create).toHaveBeenCalledWith(
+        updateVehicleDto.clientAddress
+      );
+      expect(addressesService.remove).not.toHaveBeenCalled();
+    });
+
+    it('should update a vehicle and remove the address', async () => {
+      const id = 1;
+      const updateVehicleDto: UpdateVehicleDto = {
+        registrationNumber: 'XYZ789',
+      };
+      const vehicleClientAddress = new Address();
+      vehicleClientAddress.id = 1;
+      const vehicle = new Vehicle();
+      vehicle.id = id;
+      vehicle.registrationNumber = 'ABC123';
+      vehicle.vehicleIdentificationNumber = 'ASDFGH1234567890';
+      vehicle.clientAddress = vehicleClientAddress;
 
       const vehicleBrand = new VehicleBrand();
       vehicleBrand.name = 'Toyota';
@@ -238,11 +354,19 @@ describe('VehiclesService', () => {
         .spyOn(vehicleBrandsService, 'findByName')
         .mockResolvedValue(vehicleBrand);
       jest.spyOn(service, 'findOne').mockResolvedValue(mockVehicleDto);
-      jest.spyOn(vehiclesRepository, 'find').mockResolvedValue([]);
+      jest.spyOn(vehiclesRepository, 'find').mockResolvedValue([vehicle]);
       jest.spyOn(vehiclesRepository, 'save').mockResolvedValue(vehicle);
 
       const result = await service.update(id, updateVehicleDto);
       expect(result).toEqual(mockVehicleDto);
+      expect(vehicleBrandsService.findByName).not.toHaveBeenCalledWith();
+      expect(service.findOne).toHaveBeenCalledWith(id);
+      expect(addressesService.findOne).not.toHaveBeenCalled();
+      expect(addressesService.update).not.toHaveBeenCalled();
+      expect(addressesService.create).not.toHaveBeenCalled();
+      expect(addressesService.remove).toHaveBeenCalledWith(
+        vehicle.clientAddress.id
+      );
     });
 
     it('should throw an error if vehicle not found', async () => {
@@ -297,10 +421,15 @@ describe('VehiclesService', () => {
     it('should remove a vehicle', async () => {
       const id = 1;
       const vehicle = new VehicleDto();
+      vehicle.clientAddress = { id: 1 } as AddressDto;
       jest.spyOn(service, 'findOne').mockResolvedValue(vehicle);
       jest.spyOn(vehiclesRepository, 'delete').mockResolvedValue(undefined);
+      jest.spyOn(addressesService, 'remove').mockResolvedValue();
 
       await service.remove(id);
+      expect(addressesService.remove).toHaveBeenCalledWith(
+        vehicle.clientAddress.id
+      );
       expect(vehiclesRepository.delete).toHaveBeenCalledWith(id);
     });
 

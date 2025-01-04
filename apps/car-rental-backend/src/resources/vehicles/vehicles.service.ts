@@ -241,6 +241,15 @@ export class VehiclesService {
       );
     }
     this.logger.log(`Removing vehicle with ${id}`);
+    if (vehicle.clientAddress) {
+      this.logger.log(
+        `Removing client address with id ${vehicle.clientAddress.id}`
+      );
+      await this.addressesService.remove(vehicle.clientAddress.id);
+      this.logger.log(
+        `Client address with id ${vehicle.clientAddress.id} removed`
+      );
+    }
     await this.vehiclesRepository.delete(id);
     this.logger.log(`Vehicle with id ${id} removed`);
   }
