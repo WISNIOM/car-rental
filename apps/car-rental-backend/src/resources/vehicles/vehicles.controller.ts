@@ -13,8 +13,8 @@ import {
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { ApiPaginatedResponse } from '../common/decorators/api-paginated-response.decorator';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
 import { VehicleDto } from './dto/vehicle.dto';
 import {
   ApiOkResponse,

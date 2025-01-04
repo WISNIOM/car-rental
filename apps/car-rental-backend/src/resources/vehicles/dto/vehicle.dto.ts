@@ -1,23 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
-import { DoesContainOnlyDigitsAndUppercaseLetters } from '../../common/validators/does-contain-only-digits-and-uppercase-letters.decorator';
-import { DoesNotContainSpecificLetters } from '../../common/validators/does-not-contain-specific-letters.decorator';
-import { IsFirstLetterUppercase } from '../../common/validators/is-first-letter-uppercase.decorator';
+import { IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { DoesContainOnlyDigitsAndUppercaseLetters } from '../../../common/validators/does-contain-only-digits-and-uppercase-letters.decorator';
+import { DoesNotContainSpecificLetters } from '../../../common/validators/does-not-contain-specific-letters.decorator';
+import { IsFirstLetterUppercase } from '../../../common/validators/is-first-letter-uppercase.decorator';
+import { AddressDto } from '../../addresses/dto/address.dto';
+import { Type } from 'class-transformer';
 
 export class VehicleDto {
   @ApiProperty({
     example: 1,
-    description: 'The unique identifier of the vehicle brand.',
+    description: 'The unique identifier of the vehicle.',
   })
   id: number;
   @ApiProperty({
     example: '2021-09-01T00:00:00.000Z',
-    description: 'The date and time when the vehicle brand was created.',
+    description: 'The date and time when the vehicle was created.',
   })
   createdAt: Date;
   @ApiProperty({
     example: '2021-09-01T00:00:00.000Z',
-    description: 'The date and time when the vehicle brand was last updated.',
+    description: 'The date and time when the vehicle was last updated.',
   })
   updatedAt: Date;
 
@@ -74,15 +76,23 @@ export class VehicleDto {
     type: 'string',
   })
   clientEmail: string;
-  @IsString()
+
+  @ValidateNested()
   @IsOptional()
-  @Length(0, 100, {
-    message: 'The address must contain max 100 characters.',
-  })
+  @Type(() => AddressDto)
   @ApiProperty({
-    example: 'Bielsko-Biała, ul. Cieszyńska 1',
+    type: AddressDto,
+    example: {
+      id: 1,
+      createdAt: '2021-09-01T00:00:00.000Z',
+      updatedAt: '2021-09-01T00:00:00.000Z',
+      city: 'Bielsko-Biała',
+      administrativeArea: 'Śląskie',
+      postalCode: '43-300',
+      country: 'Poland',
+      street: 'ul. Cieszyńska 12',
+    },
     description: 'The address of the client. Max length is 100 characters.',
-    type: 'string',
   })
-  clientAddress: string;
+  clientAddress: AddressDto;
 }

@@ -13,8 +13,8 @@ import {
 import { VehicleBrandsService } from './vehicle-brands.service';
 import { CreateVehicleBrandDto } from './dto/create-vehicle-brand.dto';
 import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
-import { ApiPaginatedResponse } from '../common/decorators/api-paginated-response.decorator';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
 import { VehicleBrandDto } from './dto/vehicle-brand.dto';
 import { ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
 

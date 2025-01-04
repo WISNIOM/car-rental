@@ -10,7 +10,7 @@ export class IsFirstLetterUppercaseConstraint
   implements ValidatorConstraintInterface
 {
   validate(text: string) {
-    return /^[A-Z]/.test(text);
+    return /^[A-ZĄĆĘŁŃÓŚŹŻ]/.test(text);
   }
 
   defaultMessage() {

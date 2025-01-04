@@ -4,9 +4,9 @@ import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VehicleBrand } from './entities/vehicle-brand.entity';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
-import { PageMetaDto } from '../common/pages/dto/page-meta.dto';
-import { PageDto } from '../common/pages/dto/page.dto';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
+import { PageMetaDto } from '../../common/pages/dto/page-meta.dto';
+import { PageDto } from '../../common/pages/dto/page.dto';
 import { VehicleBrandDto } from './dto/vehicle-brand.dto';
 
 type VehicleBrandField = keyof VehicleBrandDto;

@@ -4,8 +4,8 @@ import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { VehicleDto } from './dto/vehicle.dto';
-import { PageDto } from '../common/pages/dto/page.dto';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
+import { PageDto } from '../../common/pages/dto/page.dto';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
 
 describe('VehiclesController', () => {
   let controller: VehiclesController;

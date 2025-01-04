@@ -6,10 +6,12 @@ import { Vehicle } from './entities/vehicle.entity';
 import { Repository } from 'typeorm';
 import { VehicleBrandsService } from '../vehicle-brands/vehicle-brands.service';
 import { VehicleDto } from './dto/vehicle.dto';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
-import { PageDto } from '../common/pages/dto/page.dto';
-import { PageMetaDto } from '../common/pages/dto/page-meta.dto';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
+import { PageDto } from '../../common/pages/dto/page.dto';
+import { PageMetaDto } from '../../common/pages/dto/page-meta.dto';
 import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
+import { AddressesService } from '../addresses/addresses.service';
+import { Address } from '../addresses/entities/address.entity';
 
 type VehicleField = keyof VehicleDto;
 type VehicleFieldValue = VehicleDto[VehicleField];
@@ -19,14 +21,16 @@ export class VehiclesService {
   constructor(
     @InjectRepository(Vehicle)
     private readonly vehiclesRepository: Repository<Vehicle>,
-    private readonly vehicleBrandsService: VehicleBrandsService
+    private readonly vehicleBrandsService: VehicleBrandsService,
+    private readonly addressesService: AddressesService
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto): Promise<VehicleDto> {
     const brand = await this.vehicleBrandsService.findByName(
       createVehicleDto.brand
     );
-    const vehicle = await this.vehiclesRepository.find({
+    this.logger.log('Checking if vehicle with such registrationNumber/vehicleIdentificationNumber already exists');
+    const vehicles = await this.vehiclesRepository.find({
       where: [
         { registrationNumber: createVehicleDto.registrationNumber },
         {
@@ -35,7 +39,7 @@ export class VehiclesService {
         },
       ],
     });
-    if (vehicle.length) {
+    if (vehicles.length) {
       this.logger.error(
         'Vehicle with such registrationNumber/vehicleIdentificationNumber already exists'
       );
@@ -48,12 +52,17 @@ export class VehiclesService {
         HttpStatus.CONFLICT
       );
     }
+    this.logger.log('Vehicle with such registrationNumber/vehicleIdentificationNumber does not exist');
+    this.logger.log('Creating vehicle');
     const result = await this.vehiclesRepository.save({
       ...createVehicleDto,
       brand: brand,
-      clientAddress: '',
+      clientAddress: null,
       clientEmail: '',
     });
+
+    this.logger.log(`Vehicle with id ${result.id} created`);
+
     return {
       ...result,
       brand: brand.name,
@@ -91,6 +100,7 @@ export class VehiclesService {
     const { order, take, skip, sortField } = pageOptionsDto;
     const queryBuilder = this.vehiclesRepository.createQueryBuilder('vehicle');
     queryBuilder.leftJoinAndSelect('vehicle.brand', 'brand');
+    queryBuilder.leftJoinAndSelect('vehicle.clientAddress', 'clientAddress');
     let vehicleSortField = 'vehicle.id';
     const allowedSortFields: Array<VehicleField> = [
       'clientAddress',
@@ -171,11 +181,32 @@ export class VehiclesService {
         HttpStatus.CONFLICT
       );
     }
+    let clientAddress: Address;
+    if(updateVehicleDto.clientAddress) {
+      this.logger.log('Checking if client address exists');
+      const { id, ...addressData } = updateVehicleDto.clientAddress;
+      clientAddress = await this.addressesService.findOne(id);
+      if(clientAddress) {
+        this.logger.log(`Client address exists. Updating client address with id ${id}`);
+        await this.addressesService.update(id, addressData);
+        this.logger.log(`Client address with id ${id} updated`);
+      } else {
+        this.logger.log('Client address does not exist. Creating client address');
+        clientAddress = await this.addressesService.create(addressData);
+        this.logger.log(`Client address created with id ${clientAddress.id}`);
+      }
+    } else if (vehicle.clientAddress){
+      this.logger.log('Client address is not provided. Removing client address');
+      await this.addressesService.remove(vehicle.clientAddress.id);
+      this.logger.log(`Client address with id ${vehicle.clientAddress.id} removed`);
+    }
+
     this.logger.log(`Updating vehicle with id ${id}`);
     await this.vehiclesRepository.save({
       id,
       ...updateVehicleDto,
       brand: vehicleBrand,
+      clientAddress,
     });
     this.logger.log(`Vehicle with id ${id} updated`);
     return this.findOne(id);

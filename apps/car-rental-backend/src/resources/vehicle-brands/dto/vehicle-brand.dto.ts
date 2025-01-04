@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
-import { IsFirstLetterUppercase } from '../../common/validators/is-first-letter-uppercase.decorator';
+import { IsFirstLetterUppercase } from '../../../common/validators/is-first-letter-uppercase.decorator';
 
 export class VehicleBrandDto {
   @ApiProperty({
