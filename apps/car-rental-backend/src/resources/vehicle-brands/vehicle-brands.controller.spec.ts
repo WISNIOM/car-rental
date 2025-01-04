@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VehicleBrandsController } from './vehicle-brands.controller';
 import { VehicleBrandsService } from './vehicle-brands.service';
-import { PageDto } from '../common/pages/dto/page.dto';
-import { PageOptionsDto } from '../common/pages/dto/page-options.dto';
+import { PageDto } from '../../common/pages/dto/page.dto';
+import { PageOptionsDto } from '../../common/pages/dto/page-options.dto';
 import { CreateVehicleBrandDto } from './dto/create-vehicle-brand.dto';
 import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 import { VehicleBrandDto } from './dto/vehicle-brand.dto';

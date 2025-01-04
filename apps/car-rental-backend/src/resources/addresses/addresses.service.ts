@@ -13,6 +13,7 @@ export class AddressesService {
     @InjectRepository(Address)
     private readonly addressesRepository: Repository<Address>
   ) {}
+
   async create(createAddressDto: CreateAddressDto): Promise<AddressDto> {
     this.logger.log('Checking if address already exists');
     const address = await this.addressesRepository.findOne({
@@ -40,14 +41,58 @@ export class AddressesService {
     this.logger.log(`Address created with id ${savedAddress.id} created`);
     return savedAddress;
   }
-  async findOne(id: number) {
+
+  async findOne(id: number): Promise<AddressDto> {
+    this.logger.log(`Finding address with id ${id}`);
     const result = await this.addressesRepository.findOne({ where: { id } });
+    if (!result) {
+      this.logger.error(`Address with id ${id} not found`);
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `Address with id ${id} not found`,
+        },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    this.logger.log(`Address with id ${id} found`);
     return result;
   }
-  async update(id: number, updateAddressDto: UpdateAddressDto) {
-    return this.addressesRepository.update(id, updateAddressDto);
+
+  async update(id: number, updateAddressDto: UpdateAddressDto): Promise<AddressDto> {
+    const addressToBeUpdated = await this.findOne(id);
+    if (!addressToBeUpdated) {
+      this.logger.error(`Address with id ${id} not found`);
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `Address with id ${id} not found`,
+        },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    this.logger.log(`Updating address with id ${id}`);
+    await this.addressesRepository.update(id, updateAddressDto);
+    this.logger.log(`Address with id ${id} updated`);
+    return this.findOne(id);
   }
-  async remove(id: number) {
-    return this.addressesRepository.delete(id);
+
+  async remove(id: number): Promise<void> {
+    this.logger.log(`Checking if address with id ${id} exists`);
+    const address = await this.findOne(id);
+    if (!address) {
+      this.logger.error(`Address with id ${id} not found`);
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `Address with id ${id} not found`,
+        },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    this.logger.log(`Address with id ${id} exists`);
+    this.logger.log(`Deleting address with id ${id}`);
+    await this.addressesRepository.delete(id);
+    this.logger.log(`Address with id ${id} deleted`);
   }
 }

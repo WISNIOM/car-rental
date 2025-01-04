@@ -8,11 +8,13 @@ export class AddressDto {
     description: 'The unique identifier of the address.',
   })
   id: number;
+
   @ApiProperty({
     example: '2021-09-01T00:00:00.000Z',
     description: 'The date and time when the address was created.',
   })
   createdAt: Date;
+
   @ApiProperty({
     example: '2021-09-01T00:00:00.000Z',
     description: 'The date and time when the address was last updated.',

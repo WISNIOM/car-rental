@@ -10,11 +10,14 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { VehicleBrandDto } from '../vehicle-brands/dto/vehicle-brand.dto';
 import { VehicleDto } from './dto/vehicle.dto';
 import { VehicleBrand } from '../vehicle-brands/entities/vehicle-brand.entity';
+import { AddressesService } from '../addresses/addresses.service';
+import { Address } from '../addresses/entities/address.entity';
 
 describe('VehiclesService', () => {
   let service: VehiclesService;
   let vehiclesRepository: Repository<Vehicle>;
   let vehicleBrandsService: VehicleBrandsService;
+  let addressesService: AddressesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,6 +33,15 @@ describe('VehiclesService', () => {
             findByName: jest.fn(),
           },
         },
+        {
+          provide: AddressesService,
+          useValue: {
+            findOne: jest.fn(),
+            update: jest.fn(),
+            create: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -39,6 +51,8 @@ describe('VehiclesService', () => {
     );
     vehicleBrandsService =
       module.get<VehicleBrandsService>(VehicleBrandsService);
+
+    addressesService = module.get<AddressesService>(AddressesService);
   });
 
   describe('create', () => {
@@ -167,15 +181,59 @@ describe('VehiclesService', () => {
       registrationNumber: 'XYZ789',
       vehicleIdentificationNumber: 'ASWFETD2144325231',
       clientEmail: 'example@example.com',
-      clientAddress: '123 Example St',
+      clientAddress: {
+        id: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        city: 'Bielsko-Biała',
+        administrativeArea: 'Śląskie',
+        postalCode: '43-300',
+        country: 'Poland',
+        street: 'ul. 3 Maja 2',
+      },
     };
     const vehicleBrand = { id: 1, name: 'Toyota' } as VehicleBrandDto;
     it('should update a vehicle', async () => {
       const id = 1;
       const updateVehicleDto: UpdateVehicleDto = {
         registrationNumber: 'XYZ789',
+        clientAddress: {
+          id: 1,
+          createdAt: new Date('2021-09-01T00:00:00.000Z'),
+          updatedAt: new Date('2021-09-01T00:00:00.000Z'),
+          city: 'Bielsko-Biała',
+          administrativeArea: 'Śląskie',
+          postalCode: '43-300',
+          country: 'Poland',
+          street: 'ul. Cieszyńska 12',
+        },
       };
       const vehicle = new Vehicle();
+      vehicle.id = id;
+      vehicle.registrationNumber = 'ABC123';
+      vehicle.vehicleIdentificationNumber = 'ASDFGH1234567890';
+      vehicle.clientAddress = new Address();
+      vehicle.clientAddress.id = 1;
+
+      const vehicleBrand = new VehicleBrand();
+      vehicleBrand.name = 'Toyota';
+
+      jest
+        .spyOn(service, 'findOne')
+        .mockResolvedValue(vehicle as unknown as VehicleDto);
+      jest
+        .spyOn(vehicleBrandsService, 'findByName')
+        .mockResolvedValue(vehicleBrand);
+      jest
+        .spyOn(addressesService, 'findOne')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest
+        .spyOn(addressesService, 'update')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest
+        .spyOn(addressesService, 'create')
+        .mockResolvedValue(vehicle.clientAddress);
+      jest.spyOn(addressesService, 'remove').mockResolvedValue(undefined);
       jest
         .spyOn(vehicleBrandsService, 'findByName')
         .mockResolvedValue(vehicleBrand);

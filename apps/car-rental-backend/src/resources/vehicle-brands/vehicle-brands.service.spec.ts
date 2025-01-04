@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { VehicleBrand } from './entities/vehicle-brand.entity';
-import { Order } from '../common/constants';
+import { Order } from '../../common/constants';
 
 describe('VehicleBrandsService', () => {
   let service: VehicleBrandsService;
