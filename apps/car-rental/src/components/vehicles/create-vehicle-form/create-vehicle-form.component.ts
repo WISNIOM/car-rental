@@ -23,7 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CustomValidators } from '../../../../src/validators/custom-validators';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { finalize } from 'rxjs';
+import { debounceTime, finalize, fromEvent, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-vehicle-form',
@@ -41,13 +41,14 @@ import { finalize } from 'rxjs';
   styleUrl: './create-vehicle-form.component.scss',
 })
 export class CreateVehicleFormComponent implements OnInit {
-  @ViewChild('brandDropdown') brandDropdown!: MatSelect;
+  @ViewChild('createVehicleBrandDropdown') brandDropdown!: MatSelect;
   @Output() vehicleCreated = new EventEmitter<void>();
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
   currentPage = 1;
   isLoading = false;
   error: { error: string; status: number } | null = null;
+  private scrollSubscription?: Subscription;
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
@@ -85,10 +86,14 @@ export class CreateVehicleFormComponent implements OnInit {
 
   onDropdownOpened(isOpened: boolean): void {
     if (isOpened) {
-      this.brandDropdown.panel.nativeElement.addEventListener(
-        'scroll',
-        this.onScroll.bind(this)
-      );
+      this.scrollSubscription = fromEvent(
+        this.brandDropdown.panel.nativeElement,
+        'scroll'
+      )
+        .pipe(debounceTime(200))
+        .subscribe(() => this.onScroll());
+    } else if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
     }
   }
 
@@ -103,7 +108,9 @@ export class CreateVehicleFormComponent implements OnInit {
 
   onScroll(): void {
     const dropdown = this.brandDropdown.panel.nativeElement;
-    if (dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight) {
+    const isDropdownScrolledToBottom =
+      dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight - 50;
+    if (isDropdownScrolledToBottom) {
       this.loadVehicleBrands();
     }
   }

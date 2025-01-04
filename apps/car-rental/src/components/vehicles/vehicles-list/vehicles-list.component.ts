@@ -13,7 +13,7 @@ import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { FormsModule, NgModel } from '@angular/forms';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { merge, tap } from 'rxjs';
+import { debounceTime, fromEvent, merge, Subscription, tap } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
@@ -86,6 +86,8 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   pageIndex = 0;
   activeSort = 'brandName';
   directionSort = Order.ASC;
+
+  private scrollSubscription?: Subscription;
 
   constructor(
     private readonly vehiclesBrandService: VehicleBrandsService,
@@ -160,10 +162,14 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   onDropdownOpened(isOpened: boolean): void {
     if (isOpened) {
-      this.brandDropdown.panel.nativeElement.addEventListener(
-        'scroll',
-        this.onScroll.bind(this)
-      );
+      this.scrollSubscription = fromEvent(
+        this.brandDropdown.panel.nativeElement,
+        'scroll'
+      )
+        .pipe(debounceTime(200))
+        .subscribe(() => this.onScroll());
+    } else if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
     }
   }
 
@@ -177,7 +183,9 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
 
   onScroll(): void {
     const dropdown = this.brandDropdown.panel.nativeElement;
-    if (dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight) {
+    const isDropdownScrolledToBottom =
+      dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight - 50;
+    if (isDropdownScrolledToBottom) {
       this.loadVehicleBrands();
     }
   }
