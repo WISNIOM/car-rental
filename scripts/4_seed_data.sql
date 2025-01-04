@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 USE car_rental;
 
 INSERT INTO
@@ -34,14 +36,50 @@ VALUES
     ('Ram'),
     ('Buick');
 
+-- Insert addresses
+INSERT INTO
+    addresses (street, city, administrativeArea, postalCode, country)
+VALUES
+    ('ul. Marszałkowska 1', 'Warszawa', 'Mazowieckie', '00-001', 'Poland'),
+    ('ul. Piotrkowska 2', 'Łódź', 'Łódzkie', '90-001', 'Poland'),
+    ('ul. Długa 3', 'Kraków', 'Małopolskie', '30-001', 'Poland'),
+    ('ul. Półwiejska 4', 'Poznań', 'Wielkopolskie', '61-001', 'Poland'),
+    ('ul. Świdnicka 5', 'Wrocław', 'Dolnośląskie', '50-001', 'Poland'),
+    ('ul. Główna 6', 'Gdańsk', 'Pomorskie', '80-001', 'Poland'),
+    ('ul. Szeroka 7', 'Szczecin', 'Zachodniopomorskie', '70-001', 'Poland'),
+    ('ul. Krótka 8', 'Bydgoszcz', 'Kujawsko-Pomorskie', '85-001', 'Poland'),
+    ('ul. Nowa 9', 'Lublin', 'Lubelskie', '20-001', 'Poland'),
+    ('ul. Stara 10', 'Katowice', 'Śląskie', '40-001', 'Poland'),
+    ('ul. Wąska 11', 'Białystok', 'Podlaskie', '15-001', 'Poland'),
+    ('ul. Słoneczna 12', 'Rzeszów', 'Podkarpackie', '35-001', 'Poland'),
+    ('ul. Zielona 13', 'Opole', 'Opolskie', '45-001', 'Poland'),
+    ('ul. Jasna 14', 'Kielce', 'Świętokrzyskie', '25-001', 'Poland'),
+    ('ul. Cicha 15', 'Olsztyn', 'Warmińsko-Mazurskie', '10-001', 'Poland'),
+    ('ul. Leśna 16', 'Zielona Góra', 'Lubuskie', '65-001', 'Poland'),
+    ('ul. Polna 17', 'Gorzów Wielkopolski', 'Lubuskie', '66-001', 'Poland'),
+    ('ul. Wrocławska 18', 'Legnica', 'Dolnośląskie', '59-001', 'Poland'),
+    ('ul. Warszawska 19', 'Radom', 'Mazowieckie', '26-001', 'Poland'),
+    ('ul. Krakowska 20', 'Tarnów', 'Małopolskie', '33-001', 'Poland'),
+    ('ul. Poznańska 21', 'Kalisz', 'Wielkopolskie', '62-001', 'Poland'),
+    ('ul. Łódzka 22', 'Piotrków Trybunalski', 'Łódzkie', '97-001', 'Poland'),
+    ('ul. Górna 23', 'Wałbrzych', 'Dolnośląskie', '58-001', 'Poland'),
+    ('ul. Dolna 24', 'Koszalin', 'Zachodniopomorskie', '75-001', 'Poland'),
+    ('ul. Środkowa 25', 'Słupsk', 'Pomorskie', '76-001', 'Poland'),
+    ('ul. Wschodnia 26', 'Elbląg', 'Warmińsko-Mazurskie', '82-001', 'Poland'),
+    ('ul. Zachodnia 27', 'Płock', 'Mazowieckie', '09-001', 'Poland'),
+    ('ul. Północna 28', 'Ostrołęka', 'Mazowieckie', '07-001', 'Poland'),
+    ('ul. Południowa 29', 'Siedlce', 'Mazowieckie', '08-001', 'Poland'),
+    ('ul. Centralna 30', 'Przemyśl', 'Podkarpackie', '37-001', 'Poland'),
+    ('ul. 11 Listopada 31', 'Bielsko-Biała', 'Śląskie', '43-300', 'Poland');
+
 -- Insert data into vehicles table
 INSERT INTO
     vehicles (
-        brand,
+        brandId,
         vehicleIdentificationNumber,
         registrationNumber,
         clientEmail,
-        clientAddress
+        clientAddressId
     )
 VALUES
     (
@@ -56,7 +94,7 @@ VALUES
         '1VWAT7A37FC123456',
         'ABC1234',
         'john.doe@example.com',
-        '123 Main St, Anytown, USA'
+        1
     ),
     (
         (
@@ -70,7 +108,7 @@ VALUES
         'WAUZFAFR7DA123456',
         'XYZ5678',
         'jane.smith@example.com',
-        '456 Elm St, Othertown, USA'
+        2
     ),
     (
         (
@@ -84,7 +122,7 @@ VALUES
         'WP0AA2A77EL123456',
         'LMN9101',
         'mike.jones@example.com',
-        '789 Oak St, Sometown, USA'
+        3
     ),
     (
         (
@@ -98,7 +136,7 @@ VALUES
         'TMBJG7NE7G0123456',
         'QRS2345',
         'susan.lee@example.com',
-        '101 Pine St, Anycity, USA'
+        4
     ),
     (
         (
@@ -112,7 +150,7 @@ VALUES
         '3C3CFFAR8ET123456',
         'TUV6789',
         'david.brown@example.com',
-        '202 Birch St, Othercity, USA'
+        5
     ),
     (
         (
@@ -126,7 +164,7 @@ VALUES
         'WBA3A5C52DF123456',
         'JKL3456',
         'emma.wilson@example.com',
-        '303 Cedar St, Newtown, USA'
+        6
     ),
     (
         (
@@ -140,7 +178,7 @@ VALUES
         'WDDGF8AB4EA123456',
         'MNO7890',
         'oliver.thomas@example.com',
-        '404 Maple St, Oldtown, USA'
+        7
     ),
     (
         (
@@ -154,7 +192,7 @@ VALUES
         'JTDBT923071234567',
         'PQR1234',
         'charlotte.johnson@example.com',
-        '505 Spruce St, Smalltown, USA'
+        8
     ),
     (
         (
@@ -168,7 +206,7 @@ VALUES
         '2HGFB2F50DH123456',
         'STU5678',
         'liam.martin@example.com',
-        '606 Willow St, Bigcity, USA'
+        9
     ),
     (
         (
@@ -182,7 +220,7 @@ VALUES
         '1FAHP3F26CL123456',
         'VWX9012',
         'sophia.moore@example.com',
-        '707 Ash St, Middletown, USA'
+        10
     ),
     (
         (
@@ -196,7 +234,7 @@ VALUES
         '1G1JC5244R7251234',
         'YZA3456',
         'mason.taylor@example.com',
-        '808 Birch St, Anytown, USA'
+        11
     ),
     (
         (
@@ -210,7 +248,7 @@ VALUES
         'JN1AZ4EH3DM123456',
         'BCD6789',
         'ava.anderson@example.com',
-        '909 Cedar St, Othertown, USA'
+        12
     ),
     (
         (
@@ -224,7 +262,7 @@ VALUES
         'KMHCT4AE6DU123456',
         'EFG1234',
         'logan.jackson@example.com',
-        '1010 Elm St, Sometown, USA'
+        13
     ),
     (
         (
@@ -238,7 +276,7 @@ VALUES
         'KNAFX4A69E5123456',
         'HIJ5678',
         'mia.white@example.com',
-        '1111 Oak St, Anycity, USA'
+        14
     ),
     (
         (
@@ -252,7 +290,7 @@ VALUES
         'JM1BL1VFXA1234567',
         'KLM9101',
         'lucas.harris@example.com',
-        '1212 Pine St, Othercity, USA'
+        15
     ),
     (
         (
@@ -266,7 +304,7 @@ VALUES
         'JF1GPAL68DH123456',
         'NOP2345',
         'amelia.martinez@example.com',
-        '1313 Spruce St, Newtown, USA'
+        16
     ),
     (
         (
@@ -280,7 +318,7 @@ VALUES
         'SAJWA0ES8F8123456',
         'QRS6789',
         'ethan.clark@example.com',
-        '1414 Willow St, Oldtown, USA'
+        17
     ),
     (
         (
@@ -294,7 +332,7 @@ VALUES
         'SALWR2VF4FA123456',
         'TUV1234',
         'isabella.lewis@example.com',
-        '1515 Ash St, Smalltown, USA'
+        18
     ),
     (
         (
@@ -308,7 +346,7 @@ VALUES
         'YV1MS382162123456',
         'WXY5678',
         'james.walker@example.com',
-        '1616 Birch St, Bigcity, USA'
+        19
     ),
     (
         (
@@ -322,7 +360,7 @@ VALUES
         'WMWZB3C54DWP12345',
         'ZAB9012',
         'sophia.hall@example.com',
-        '1717 Cedar St, Middletown, USA'
+        20
     ),
     (
         (
@@ -336,7 +374,7 @@ VALUES
         'JTHBK1EG6B2123456',
         'CDE3456',
         'benjamin.young@example.com',
-        '1818 Elm St, Anytown, USA'
+        21
     ),
     (
         (
@@ -350,7 +388,7 @@ VALUES
         'JN1CV6AP7BM123456',
         'FGH6789',
         'emma.king@example.com',
-        '1919 Oak St, Othertown, USA'
+        22
     ),
     (
         (
@@ -364,7 +402,7 @@ VALUES
         '19UUA8F54CA123456',
         'IJK1234',
         'william.scott@example.com',
-        '2020 Pine St, Sometown, USA'
+        23
     ),
     (
         (
@@ -378,7 +416,7 @@ VALUES
         'JA32U2FU8CU123456',
         'LMN5678',
         'olivia.green@example.com',
-        '2121 Spruce St, Anycity, USA'
+        24
     ),
     (
         (
@@ -392,7 +430,7 @@ VALUES
         '5YJSA1E26FF123456',
         'OPQ9101',
         'michael.adams@example.com',
-        '2222 Willow St, Othercity, USA'
+        25
     ),
     (
         (
@@ -406,7 +444,7 @@ VALUES
         '1C4RJFAG6FC123456',
         'RST2345',
         'ava.baker@example.com',
-        '2323 Ash St, Newtown, USA'
+        26
     ),
     (
         (
@@ -420,7 +458,7 @@ VALUES
         '2C3CCARG8EH123456',
         'UVW6789',
         'daniel.carter@example.com',
-        '2424 Birch St, Oldtown, USA'
+        27
     ),
     (
         (
@@ -434,7 +472,7 @@ VALUES
         '2C3CDXBG9DH123456',
         'XYZ1234',
         'sophia.mitchell@example.com',
-        '2525 Cedar St, Smalltown, USA'
+        28
     ),
     (
         (
@@ -448,7 +486,7 @@ VALUES
         '1C6RR7FT5ES123456',
         'ABC5678',
         'james.perez@example.com',
-        '2626 Elm St, Bigcity, USA'
+        29
     ),
     (
         (
@@ -462,5 +500,5 @@ VALUES
         '1G4PP5SK5C4123456',
         'DEF9012',
         'mia.roberts@example.com',
-        '2727 Oak St, Middletown, USA'
+        30
     );
