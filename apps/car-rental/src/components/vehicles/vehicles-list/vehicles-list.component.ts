@@ -33,6 +33,7 @@ import {
 } from '../../../../src/validators/custom-validators';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmVehicleRemovalComponent } from '../confirm-vehicle-removal/confirm-vehicle-removal.component';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -124,6 +125,19 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  openConfirmRemoveVehicleDialog(vehicle: VehicleDto): void {
+    const dialogRef = this.dialog.open(ConfirmVehicleRemovalComponent, {
+      width: '400px',
+      height: '200px',
+      data: vehicle,
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'vehicleRemoved') {
+        this.loadVehicles();
+      }
+    });
+  }
+
   loadVehicleBrands(): void {
     this.vehiclesBrandService
       .getVehicleBrands({
@@ -197,24 +211,6 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   editVehicle(vehicle: VehicleDto): void {
     this.editedVehicle = vehicle;
     this.vehicleCopy = { ...vehicle };
-  }
-
-  removeVehicle(vehicle: VehicleDto): void {
-    this.vehiclesService.removeVehicle(vehicle.id).subscribe({
-      next: () => {
-        this.loadVehicles();
-        this.notificationService.showSuccess('Pojazd został usunięty. 🚗');
-      },
-      error: (error) => {
-        if (error.error.status === 404) {
-          this.notificationService.showError(
-            'Nie znaleziono takiego pojazdu.😥'
-          );
-          return;
-        }
-        this.notificationService.showError('Nie udało się usunąć pojazdu. 😢');
-      },
-    });
   }
 
   openDetails(id: number): void {

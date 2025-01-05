@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { VehiclesListComponent } from "../components/vehicles/vehicles-list/vehicles-list.component";
 
 @Component({
-  imports: [RouterModule, VehiclesListComponent],
+  imports: [RouterModule],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
