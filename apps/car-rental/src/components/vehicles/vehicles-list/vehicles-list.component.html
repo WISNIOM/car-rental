@@ -1,50 +1,32 @@
 <div id="vehicles-list">
   <div id="vehicles-list-navbar">
     <h2>Vehicle List</h2>
-    <button mat-icon-button (click)="openCreateVehicleFormDialog()">
+    <button mat-icon-button matTooltip="Dodaj pojazd" (click)="openCreateVehicleFormDialog()">
       <mat-icon>add</mat-icon>
     </button>
   </div>
   <ng-container>
-    <table
-      mat-table
-      [dataSource]="dataSource"
-      matSort
-      matSortActive="brandName"
-      matSortDisableClear
-      matSortDirection="asc"
-    >
+    <table mat-table [dataSource]="dataSource" matSort matSortActive="brandName" matSortDisableClear
+      matSortDirection="asc">
       <!-- Brand column -->
       <ng-container matColumnDef="brandName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>
           Marka
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-            >{{ element.brand }}
+            ">{{ element.brand }}
           </ng-container>
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               editedVehicle && editedVehicle.id === element.id && vehicleCopy
-            "
-          >
+            ">
             <mat-form-field>
               <mat-label>Marka</mat-label>
-              <mat-select
-                #brandDropdown
-                required
-                [(value)]="vehicleCopy.brand"
-                placeholder="Toyota"
-                (openedChange)="onDropdownOpened($event)"
-              >
-                <mat-option
-                  *ngFor="let brand of vehicleBrands"
-                  [value]="brand.name"
-                >
+              <mat-select #brandDropdown required [(value)]="vehicleCopy.brand" placeholder="Toyota"
+                (openedChange)="onDropdownOpened($event)">
+                <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.name">
                   {{ brand.name }}
                 </mat-option>
               </mat-select>
@@ -58,35 +40,21 @@
           Numer Rejestracyjny
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-          >
+            ">
             {{ element.registrationNumber }}
           </ng-container>
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               editedVehicle && editedVehicle.id === element.id && vehicleCopy
-            "
-          >
+            ">
             <mat-form-field>
               <mat-label>Numer Rejestracyjny</mat-label>
-              <input
-                matInput
-                [ngModelOptions]="{ updateOn: 'blur' }"
-                [(ngModel)]="vehicleCopy.registrationNumber"
-                name="registrationNumber"
-                #registrationNumberInput="ngModel"
-                required
-                minlength="6"
-                maxlength="7"
-                doesNotContainPolishLetters
-                doesContainOnlyDigitsAndUppercaseLetters
-                [doesNotContainSpecificLetters]="['B', 'D', 'I', 'O', 'Z']"
-                [letterIndex]="2"
-              />
+              <input matInput [ngModelOptions]="{ updateOn: 'blur' }" [(ngModel)]="vehicleCopy.registrationNumber"
+                name="registrationNumber" #registrationNumberInput="ngModel" required minlength="6" maxlength="7"
+                doesNotContainPolishLetters doesContainOnlyDigitsAndUppercaseLetters
+                [doesNotContainSpecificLetters]="['B', 'D', 'I', 'O', 'Z']" [letterIndex]="2" />
               <mat-error *ngIf="registrationNumberInput.errors?.['required']">
                 Numer rejestracyjny jest wymagany
               </mat-error>
@@ -96,28 +64,22 @@
               <mat-error *ngIf="registrationNumberInput.errors?.['maxlength']">
                 Numer rejestracyjny może mieć maksymalnie 17 znaków
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   registrationNumberInput.errors
                     ?.['doesNotContainPolishLetters']
-                "
-              >
+                ">
                 Numer rejestracyjny nie może zawierać polskich liter
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   registrationNumberInput.errors
                     ?.['doesContainOnlyDigitsAndUppercaseLetters']
-                "
-              >
+                ">
                 Numer rejestracyjny może zawierać tylko cyfry i wielkie litery
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   registrationNumberInput.errors
                     ?.['doesNotContainSpecificLetters']
-                "
-              >
+                ">
                 Numer rejestracyjny nie może zawierać liter I, O, Q
               </mat-error>
             </mat-form-field>
@@ -130,70 +92,46 @@
           Numer VIN
         </th>
         <td mat-cell *matCellDef="let element">
-          <span
-            *ngIf="
+          <span *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-          >
+            ">
             {{ element.vehicleIdentificationNumber }}
           </span>
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               editedVehicle && editedVehicle.id === element.id && vehicleCopy
-            "
-          >
+            ">
             <mat-form-field>
               <mat-label>Numer VIN</mat-label>
-              <input
-                matInput
-                [(ngModel)]="vehicleCopy.vehicleIdentificationNumber"
-                name="vehicleIdentificationNumber"
-                #vehicleIdentificationNumberInput="ngModel"
-                required
-                minlength="17"
-                maxlength="17"
-                doesNotContainPolishLetters
-                doesContainOnlyDigitsAndUppercaseLetters
-                [doesNotContainSpecificLetters]="['I', 'O', 'Q']"
-              />
-              <mat-error
-                *ngIf="vehicleIdentificationNumberInput.errors?.['required']"
-              >
+              <input matInput [(ngModel)]="vehicleCopy.vehicleIdentificationNumber" name="vehicleIdentificationNumber"
+                #vehicleIdentificationNumberInput="ngModel" required minlength="17" maxlength="17"
+                doesNotContainPolishLetters doesContainOnlyDigitsAndUppercaseLetters
+                [doesNotContainSpecificLetters]="['I', 'O', 'Q']" />
+              <mat-error *ngIf="vehicleIdentificationNumberInput.errors?.['required']">
                 Numer VIN jest wymagany
               </mat-error>
-              <mat-error
-                *ngIf="vehicleIdentificationNumberInput.errors?.['minlength']"
-              >
+              <mat-error *ngIf="vehicleIdentificationNumberInput.errors?.['minlength']">
                 Numer VIN musi mieć co najmniej 17 znaków
               </mat-error>
-              <mat-error
-                *ngIf="vehicleIdentificationNumberInput.errors?.['maxlength']"
-              >
+              <mat-error *ngIf="vehicleIdentificationNumberInput.errors?.['maxlength']">
                 Numer VIN może mieć maksymalnie 17 znaków
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   vehicleIdentificationNumberInput.errors
                     ?.['doesNotContainPolishLetters']
-                "
-              >
+                ">
                 Numer VIN nie może zawierać polskich liter
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   vehicleIdentificationNumberInput.errors
                     ?.['doesContainOnlyDigitsAndUppercaseLetters']
-                "
-              >
+                ">
                 Numer VIN może zawierać tylko cyfry i wielkie litery
               </mat-error>
-              <mat-error
-                *ngIf="
+              <mat-error *ngIf="
                   vehicleIdentificationNumberInput.errors
                     ?.['doesNotContainSpecificLetters']
-                "
-              >
+                ">
                 Numer VIN nie może zawierać liter I, O, Q
               </mat-error>
             </mat-form-field>
@@ -206,28 +144,19 @@
           Email Klienta
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-          >
+            ">
             {{ element.clientEmail }}
           </ng-container>
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               editedVehicle && editedVehicle.id === element.id && vehicleCopy
-            "
-          >
+            ">
             <mat-form-field>
               <mat-label>Email Klienta</mat-label>
-              <input
-                matInput
-                [(ngModel)]="vehicleCopy.clientEmail"
-                name="clientEmail"
-                #clientEmailInput="ngModel"
-                email
-              />
+              <input matInput [(ngModel)]="vehicleCopy.clientEmail" name="clientEmail" #clientEmailInput="ngModel"
+                email />
               <mat-error *ngIf="clientEmailInput?.errors?.['email']">
                 Niepoprawny adres email
               </mat-error>
@@ -241,28 +170,23 @@
           Adres Klienta
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-          >
-            {{ element.clientAddress }}
+            ">
+            {{ element.clientAddress.country }},
+            {{ element.clientAddress.administrativeArea }}, 
+            {{ element.clientAddress.postalCode }}, 
+            {{ element.clientAddress.city }},
+            {{ element.clientAddress.street }}
           </ng-container>
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               editedVehicle && editedVehicle.id === element.id && vehicleCopy
-            "
-          >
+            ">
             <mat-form-field>
               <mat-label>Adres Klienta</mat-label>
-              <input
-                matInput
-                [(ngModel)]="vehicleCopy.clientAddress"
-                name="clientAddress"
-                #clientAddressInput="ngModel"
-                maxlength="100"
-              />
+              <input matInput [(ngModel)]="vehicleCopy.clientAddress" name="clientAddress" #clientAddressInput="ngModel"
+                maxlength="100" />
               <mat-error *ngIf="clientAddressInput?.errors?.['maxlength']">
                 Adres Klienta może mieć maksymalnie 100 znaków
               </mat-error>
@@ -272,33 +196,33 @@
       </ng-container>
       <!-- Actions column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>
+        <th mat-header-cell *matHeaderCellDef>
           Akcje
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               !editedVehicle ||
               (editedVehicle && editedVehicle.id !== element.id)
-            "
-          >
+            ">
             <button mat-icon-button [matMenuTriggerFor]="menu">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="editVehicle(element)">
-                <mat-icon class="edit-icon">edit</mat-icon>
+                <mat-icon>edit</mat-icon>
                 <span>Edytuj</span>
               </button>
               <button mat-menu-item (click)="removeVehicle(element)">
                 <mat-icon>delete</mat-icon>
                 <span>Usuń</span>
               </button>
+              <button mat-menu-item (click)="openDetails(element.id)">
+                <mat-icon>details</mat-icon>
+                <span>Szczegóły</span>
+              </button>
             </mat-menu>
           </ng-container>
-          <ng-container
-            *ngIf="editedVehicle && editedVehicle.id === element.id"
-          >
+          <ng-container *ngIf="editedVehicle && editedVehicle.id === element.id">
             <button mat-icon-button (click)="confirmEditing()">
               <mat-icon>check</mat-icon>
             </button>
@@ -312,14 +236,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-    <mat-paginator
-      #paginator
-      (page)="pageChangeEvent($event)"
-      [pageSizeOptions]="[5, 10, 25, 50, 100]"
-      [length]="totalRecords"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      showFirstLastButtons
-    ></mat-paginator>
+    <mat-paginator #paginator (page)="pageChangeEvent($event)" [pageSizeOptions]="[5, 10, 25, 50, 100]"
+      [length]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageIndex" showFirstLastButtons></mat-paginator>
   </ng-container>
 </div>

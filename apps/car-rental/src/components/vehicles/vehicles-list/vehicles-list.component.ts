@@ -31,6 +31,8 @@ import {
   DoesNotContainPolishLettersDirective,
   DoesNotContainSpecificLettersDirective,
 } from '../../../../src/validators/custom-validators';
+import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -47,6 +49,7 @@ import {
     MatPaginatorModule,
     MatDividerModule,
     MatButtonModule,
+    MatTooltipModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSortModule,
@@ -93,7 +96,8 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     private readonly vehiclesBrandService: VehicleBrandsService,
     private readonly vehiclesService: VehiclesService,
     private readonly notificationService: NotificationService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly router: Router
   ) {}
 
   ngAfterViewInit(): void {
@@ -191,8 +195,6 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   }
 
   editVehicle(vehicle: VehicleDto): void {
-    // Implement edit vehicle logic here
-    console.log('Edit vehicle:', vehicle);
     this.editedVehicle = vehicle;
     this.vehicleCopy = { ...vehicle };
   }
@@ -213,6 +215,10 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
         this.notificationService.showError('Nie udało się usunąć pojazdu. 😢');
       },
     });
+  }
+
+  openDetails(id: number): void {
+    this.router.navigate(['/vehicles', id]);
   }
 
   checkRegistrationNumberInput(): boolean {

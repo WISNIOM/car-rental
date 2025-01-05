@@ -79,7 +79,7 @@ export class VehiclesService {
     this.logger.log(`Finding vehicle by ${field} with value ${value}`);
     const vehicle = await this.vehiclesRepository.findOne({
       where: { [field]: value },
-      relations: ['brand'],
+      relations: ['brand', 'clientAddress'],
       select: [
         'id',
         'registrationNumber',

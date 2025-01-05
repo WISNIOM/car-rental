@@ -1,1 +1,46 @@
-<p>vehicle works!</p>
+<ng-container *ngIf="vehicle && !isLoading">
+    <mat-card id="vehicle-card">
+        <mat-card-header>
+            <mat-card-title>
+                <div id="vehicle-card-title">
+                    <div>Szczegóły pojazdu</div>
+                    <div>
+                        <button mat-icon-button matTooltip="Wróć do listy" (click)="goBackToTheVehiclesList()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Edytuj pojazd">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Usuń pojazd">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div>
+                <h3>Dane pojazdu</h3>
+                <p><strong>Marka:</strong> {{ vehicle.brand }}</p>
+                <p><strong>Numer rejestracyjny:</strong> {{ vehicle.registrationNumber }}</p>
+                <p><strong>Numer VIN:</strong> {{ vehicle.vehicleIdentificationNumber }}</p>
+            </div>
+            <mat-divider></mat-divider>
+            <div>
+                <h3>Dane klienta</h3>
+                <p><strong>Email:</strong> {{ vehicle.clientEmail }}</p>
+                <p><strong>Kraj:</strong> {{ vehicle.clientAddress?.country }}</p>
+                <p><strong>Województwo:</strong> {{ vehicle.clientAddress?.administrativeArea }}</p>
+                <p><strong>Miasto:</strong> {{ vehicle.clientAddress?.city }}</p>
+                <p><strong>Kod pocztowy:</strong> {{ vehicle.clientAddress?.postalCode }}</p>
+                <p><strong>Ulica:</strong> {{ vehicle.clientAddress?.street }}</p>
+
+            </div>
+        </mat-card-content>
+    </mat-card>
+</ng-container>
+<ng-container *ngIf="isLoading">
+    <div *ngIf="isLoading" class="center">
+        <mat-spinner></mat-spinner>
+    </div>
+</ng-container>
