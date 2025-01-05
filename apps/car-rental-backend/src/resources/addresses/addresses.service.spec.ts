@@ -141,18 +141,16 @@ describe('AddressesService', () => {
       expect(addressRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(addressRepository.save).toHaveBeenCalledWith(
-        1,
-        updateAddressDto
-      );
+      expect(addressRepository.save).toHaveBeenCalledWith({
+        id: 1,
+        ...updateAddressDto,
+      });
     });
 
     it('should throw a NotFoundException if address is not found', async () => {
       addressRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.update(1, {} as UpdateAddressDto)
-      ).rejects.toThrow(
+      await expect(service.update(1, {} as UpdateAddressDto)).rejects.toThrow(
         new HttpException(
           {
             status: HttpStatus.NOT_FOUND,
