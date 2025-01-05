@@ -13,6 +13,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmVehicleRemovalComponent } from '../confirm-vehicle-removal/confirm-vehicle-removal.component';
 
 @Component({
   selector: 'app-vehicle',
@@ -26,6 +28,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDividerModule,
     MatIconButton,
     MatIconModule,
+    MatDialogModule,
   ],
   templateUrl: './vehicle.component.html',
   styleUrl: './vehicle.component.scss',
@@ -39,6 +42,7 @@ export class VehicleComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly vehiclesService: VehiclesService,
     private readonly vehiclesBrandService: VehicleBrandsService,
+    private readonly dialog: MatDialog,
     private readonly notificationService: NotificationService,
     private readonly router: Router
   ) {
@@ -68,5 +72,18 @@ export class VehicleComponent implements OnInit {
 
   goBackToTheVehiclesList(): void {
     this.router.navigate(['/vehicles']);
+  }
+
+  openConfirmVehicleRemovalDialog(): void {
+    const dialogRef = this.dialog.open(ConfirmVehicleRemovalComponent, {
+      width: '400px',
+      height: '200px',
+      data: this.vehicle,
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'vehicleRemoved') {
+        this.goBackToTheVehiclesList();
+      }
+    });
   }
 }
