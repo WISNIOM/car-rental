@@ -34,6 +34,7 @@ import {
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmVehicleRemovalComponent } from '../confirm-vehicle-removal/confirm-vehicle-removal.component';
+import { EditVehicleFormComponent } from '../edit-vehicle-form/edit-vehicle-form.component';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -138,6 +139,19 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  openEditVehicleFormDialog(vehicle: VehicleDto): void {
+      const dialogRef = this.dialog.open(EditVehicleFormComponent, {
+        width: '800px',
+        height: '600px',
+        data: vehicle,
+      });
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result === 'vehicleEdited') {
+          this.loadVehicles();
+        }
+      });
+    }
+
   loadVehicleBrands(): void {
     this.vehiclesBrandService
       .getVehicleBrands({
@@ -175,7 +189,6 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
   pageChangeEvent(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.cancelEditing();
   }
 
   onDropdownOpened(isOpened: boolean): void {
@@ -196,7 +209,6 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     this.pageIndex = 0;
     this.activeSort = sort.active;
     this.directionSort = sort.direction.toUpperCase() as Order;
-    this.cancelEditing();
   }
 
   onScroll(): void {
@@ -208,187 +220,7 @@ export class VehiclesListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  editVehicle(vehicle: VehicleDto): void {
-    this.editedVehicle = vehicle;
-    this.vehicleCopy = { ...vehicle };
-  }
-
   openDetails(id: number): void {
     this.router.navigate(['/vehicles', id]);
-  }
-
-  checkRegistrationNumberInput(): boolean {
-    if (this.registrationNumberInput.errors) {
-      if (
-        this.registrationNumberInput.errors[
-          'doesContainOnlyDigitsAndUppercaseLetters'
-        ]
-      ) {
-        this.notificationService.showError(
-          'Numer rejestracyjny musi składać się tylko z wielkich liter i cyfr. 😥'
-        );
-        return false;
-      }
-      if (this.registrationNumberInput.errors['required']) {
-        this.notificationService.showError(
-          'Numer rejestracyjny jest wymagany. 😥'
-        );
-        return false;
-      }
-      if (this.registrationNumberInput.errors['minlength']) {
-        this.notificationService.showError(
-          'Numer rejestracyjny musi mieć co najmniej 6 znaków. 😥'
-        );
-        return false;
-      }
-      if (this.registrationNumberInput.errors['maxlength']) {
-        this.notificationService.showError(
-          'Numer rejestracyjny może mieć maksymalnie 7 znaków. 😥'
-        );
-        return false;
-      }
-      if (
-        this.registrationNumberInput.errors[
-          'doesContainOnlyDigitsAndUppercaseLetters'
-        ]
-      ) {
-        this.notificationService.showError(
-          'Numer rejestracyjny może składać się tylko z wielkich liter i cyfr. 😥'
-        );
-        return false;
-      }
-      if (this.registrationNumberInput.errors['doesNotContainPolishLetters']) {
-        this.notificationService.showError(
-          'Numer rejestracyjny może składać się tylko z polskich znaków. 😥'
-        );
-        return false;
-      }
-      if (
-        this.registrationNumberInput.errors['doesNotContainSpecificLetters']
-      ) {
-        this.notificationService.showError(
-          'Numer nie może zawierać liter I, O, Q. 😥'
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  checkVehicleIdentificationNumberInput(): boolean {
-    if (this.vehicleIdentificationNumberInput.errors) {
-      if (
-        this.vehicleIdentificationNumberInput.errors[
-          'doesContainOnlyDigitsAndUppercaseLetters'
-        ]
-      ) {
-        this.notificationService.showError(
-          'Numer VIN musi składać się tylko z wielkich liter i cyfr. 😥'
-        );
-        return false;
-      }
-      if (this.vehicleIdentificationNumberInput.errors['required']) {
-        this.notificationService.showError('Numer VIN jest wymagany. 😥');
-        return false;
-      }
-      if (this.vehicleIdentificationNumberInput.errors['minlength']) {
-        this.notificationService.showError(
-          'Numer VIN musi mieć dokładnie 17 znaków. 😥'
-        );
-        return false;
-      }
-      if (this.vehicleIdentificationNumberInput.errors['maxlength']) {
-        this.notificationService.showError(
-          'Numer VIN musi mieć dokładnie 17 znaków. 😥'
-        );
-        return false;
-      }
-      if (
-        this.vehicleIdentificationNumberInput.errors[
-          'doesNotContainPolishLetters'
-        ]
-      ) {
-        this.notificationService.showError(
-          'Numer VIN nie może zawierać polskich znaków. 😥'
-        );
-        return false;
-      }
-      if (
-        this.vehicleIdentificationNumberInput.errors[
-          'doesNotContainSpecificLetters'
-        ]
-      ) {
-        this.notificationService.showError(
-          'Numer VIN nie może zawierać liter I, O, Q. 😥'
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  checkClientEmailInput(): boolean {
-    if (this.clientEmailInput.errors) {
-      if (this.clientEmailInput.errors['email']) {
-        this.notificationService.showError(
-          'Email klienta jest niepoprawny. 😥'
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  checkClientAddressInput(): boolean {
-    if (this.clientAddressInput.errors) {
-      if (this.clientAddressInput.errors['maxlength']) {
-        this.notificationService.showError(
-          'Adres klienta może mieć maksymalnie 100 znaków. 😥'
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  confirmEditing(): void {
-    if (
-      !this.checkRegistrationNumberInput() ||
-      !this.checkVehicleIdentificationNumberInput() ||
-      !this.checkClientEmailInput() ||
-      !this.checkClientAddressInput()
-    ) {
-      return;
-    }
-    if (this.editedVehicle && this.vehicleCopy) {
-      this.vehiclesService
-        .updateVehicle(this.editedVehicle.id, this.vehicleCopy)
-        .subscribe({
-          next: () => {
-            this.notificationService.showSuccess(
-              'Pojazd został zaktualizowany. 🚗'
-            );
-            this.editedVehicle = null;
-            this.vehicleCopy = null;
-            this.loadVehicles();
-          },
-          error: (error) => {
-            if (error.error.status === 404) {
-              this.notificationService.showError(
-                'Nie znaleziono takiego pojazdu. 😥'
-              );
-              return;
-            }
-            this.notificationService.showError(
-              'Nie udało się zaktualizować pojazdu. 😢'
-            );
-          },
-        });
-    }
-  }
-
-  cancelEditing(): void {
-    this.editedVehicle = null;
-    this.vehicleCopy = null;
   }
 }

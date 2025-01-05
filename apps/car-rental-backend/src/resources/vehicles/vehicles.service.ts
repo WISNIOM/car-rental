@@ -109,7 +109,6 @@ export class VehiclesService {
     queryBuilder.leftJoinAndSelect('vehicle.clientAddress', 'clientAddress');
     let vehicleSortField = 'vehicle.id';
     const allowedSortFields: Array<VehicleField> = [
-      'clientAddress',
       'clientEmail',
       'registrationNumber',
       'vehicleIdentificationNumber',
@@ -120,6 +119,8 @@ export class VehiclesService {
     if (sortField) {
       if (sortField === 'brandName') {
         vehicleSortField = 'brand.name';
+      } else if (sortField === 'clientAddress') {
+        vehicleSortField = 'clientAddress.city';
       } else if (allowedSortFields.includes(sortField as VehicleField)) {
         vehicleSortField = `vehicle.${sortField}`;
       }
@@ -154,7 +155,7 @@ export class VehiclesService {
     id: number,
     updateVehicleDto: UpdateVehicleDto
   ): Promise<VehicleDto> {
-    const { registrationNumber, vehicleIdentificationNumber, brand } =
+    const { registrationNumber, vehicleIdentificationNumber, brand, clientEmail } =
       updateVehicleDto;
     let vehicleBrand: VehicleBrand;
     if (brand) {
@@ -225,6 +226,7 @@ export class VehiclesService {
       id,
       ...updateVehicleDto,
       brand: vehicleBrand,
+      clientEmail: clientEmail || '',
       clientAddress,
     });
     this.logger.log(`Vehicle with id ${id} updated`);

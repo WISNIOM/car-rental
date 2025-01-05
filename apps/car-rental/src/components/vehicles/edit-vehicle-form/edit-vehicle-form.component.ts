@@ -5,7 +5,7 @@ import {
   MAT_DIALOG_DATA,
   MatDialogModule,
 } from '@angular/material/dialog';
-import { VehicleDto } from '../../../dtos/vehicle';
+import { UpdateVehicleDto, VehicleDto } from '../../../dtos/vehicle';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { VehiclesService } from '../../../../src/services/vehicles.service';
 import { NotificationService } from '../../../../src/services/notification.service';
@@ -23,7 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
-import { AddressDto } from '../../../dtos/address';
+import { AddressDto, CreateAddressDto } from '../../../dtos/address';
 
 @Component({
   selector: 'app-edit-vehicle-form',
@@ -86,25 +86,25 @@ export class EditVehicleFormComponent implements OnInit {
       ]),
       clientAddress: new FormGroup({
         country: new FormControl(
-          (this.vehicleCopy.clientAddress as AddressDto).country || '',
-          [Validators.minLength(2), Validators.maxLength(100)]
+          this.vehicleCopy.clientAddress?.country || '',
+          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
         ),
         administrativeArea: new FormControl(
           this.vehicleCopy.clientAddress?.administrativeArea || '',
-          [Validators.minLength(2), Validators.maxLength(100)]
+          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
         ),
-        city: new FormControl(this.vehicleCopy.clientAddress?.city || '', [
-          Validators.minLength(2),
-          Validators.maxLength(100),
-        ]),
+        city: new FormControl(
+          this.vehicleCopy.clientAddress?.city || '', 
+          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+        ),
         postalCode: new FormControl(
           this.vehicleCopy.clientAddress?.postalCode || '',
-          [Validators.minLength(2), Validators.maxLength(100)]
+          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
         ),
-        street: new FormControl(this.vehicleCopy.clientAddress?.street || '', [
-          Validators.minLength(2),
-          Validators.maxLength(100),
-        ]),
+        street: new FormControl(
+          this.vehicleCopy.clientAddress?.street || '',
+          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+        )
       }),
     });
   }
@@ -148,16 +148,25 @@ export class EditVehicleFormComponent implements OnInit {
       });
   }
 
+  isClientAddressEmpty(clientAddress: CreateAddressDto): boolean {
+    return Object.values(clientAddress).some((value) => value === '');
+  }
+
   onSubmit(): void {
     this.isLoading = true;
-    const { clientAddress, ...vehicleData } = this.vehicleForm.value;
+    const { clientAddress, clientEmail, ...vehicleData } = this.vehicleForm.value;
     if(this.vehicleCopy.clientAddress) {
       if((this.vehicleCopy.clientAddress as AddressDto).id) {
         clientAddress.id = (this.vehicleCopy.clientAddress as AddressDto).id;
       }
     }
+    const updateVehicleData: UpdateVehicleDto = {
+      ...vehicleData,
+      clientAddress: this.isClientAddressEmpty(clientAddress) ? undefined : clientAddress,
+      clientEmail: !clientEmail ? undefined : clientEmail,
+    };
     this.vehiclesService
-      .updateVehicle(this.vehicleCopy.id, {...vehicleData, clientAddress})
+      .updateVehicle(this.vehicleCopy.id, updateVehicleData)
       .subscribe({
         next: () => {
           this.notificationService.showSuccess(
