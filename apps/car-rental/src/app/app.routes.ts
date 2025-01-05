@@ -6,6 +6,6 @@ import { VehicleComponent } from '../components/vehicles/vehicle-details/vehicle
 export const appRoutes: Route[] = [
   { path: 'vehicles', component: VehiclesListComponent },
   {path: 'vehicles/:id', component: VehicleComponent },
-  { path: '', redirectTo: '/vehicles-list', pathMatch: 'full' },
+  { path: '', redirectTo: '/vehicles', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];

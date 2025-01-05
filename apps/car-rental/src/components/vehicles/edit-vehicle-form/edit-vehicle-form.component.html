@@ -1,0 +1,188 @@
+<ng-container id="dialog">
+    <div *ngIf="isLoading" class="center">
+        <mat-spinner></mat-spinner>
+    </div>
+    <ng-container *ngIf="!isLoading">
+        <h2 mat-dialog-title>Edytuj pojazd</h2>
+        <mat-dialog-content>
+            <form [formGroup]="vehicleForm">
+                <!-- Vehicle registration number form field -->
+                <mat-form-field>
+                    <mat-label>Numer Rejestracyjny</mat-label>
+                    <input matInput oninput="this.value = this.value.toUpperCase()" placeholder="SB33221"
+                        formControlName="registrationNumber" />
+                    <mat-error *ngIf="vehicleForm.get('registrationNumber')?.hasError('required')">
+                        Numer Rejestracyjny jest wymagany
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('registrationNumber')
+                  ?.hasError('doesNotContainPolishLetters')
+              ">
+                        Numer Rejestracyjny nie może zawierać polskich znaków
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('registrationNumber')
+                  ?.hasError('minlength') ||
+                vehicleForm
+                  .get('registrationNumber')
+                  ?.hasError('maxlength')
+              ">
+                        Numer rejestracyjny musi mieć 6-7 znaków
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('registrationNumber')
+                  ?.hasError('doesContainOnlyDigitsAndUppercaseLetters')
+              ">
+                        Numer Rejestracyjny musi zawierać tylko cyfry i wielkie litery
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('registrationNumber')
+                  ?.hasError('doesNotContainSpecificLetters')
+              ">
+                        Numer Rejestracyjny nie może zawierać liter B, D, I, O, Z za
+                        powiatem
+                    </mat-error>
+                </mat-form-field>
+                <!-- Vehicle identification number form field -->
+                <mat-form-field>
+                    <mat-label>Numer VIN</mat-label>
+                    <input matInput oninput="this.value = this.value.toUpperCase()" placeholder="1FAFP34N55W122943"
+                        formControlName="vehicleIdentificationNumber" />
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('required')
+              ">
+                        Numer VIN jest wymagany
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('minlength') ||
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('maxlength')
+              ">
+                        Numer VIN musi mieć 17 znaków
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('doesNotContainPolishLetters')
+              ">
+                        Numer VIN nie może zawierać polskich znaków
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('doesContainOnlyDigitsAndUppercaseLetters')
+              ">
+                        Numer VIN musi zawierać tylko cyfry i wielkie litery
+                    </mat-error>
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('vehicleIdentificationNumber')
+                  ?.hasError('doesNotContainSpecificLetters')
+              ">
+                        Numer VIN nie może zawierać liter I, O, Q
+                    </mat-error>
+                </mat-form-field>
+                <!-- Brand form field -->
+                <mat-form-field>
+                    <mat-label>Marka</mat-label>
+                    <mat-select #editVehicleBrandDropdown formControlName="brand" placeholder="Toyota"
+                        (openedChange)="onDropdownOpened($event)">
+                        <mat-option *ngFor="let brand of vehicleBrands" [value]="brand.name">
+                            {{ brand.name }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vehicleForm.get('brand')?.hasError('required')">
+                        Marka jest wymagana
+                    </mat-error>
+                </mat-form-field>
+                <!-- Client email form field -->
+                <mat-form-field>
+                    <mat-label>Email klienta</mat-label>
+                    <input matInput placeholder="emma.wilson@example.com" formControlName="clientEmail" />
+                    <mat-error *ngIf="
+                vehicleForm
+                  .get('clientEmail')
+                  ?.hasError('email')
+              ">
+                        Niepoprawny adres email
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Client country form field -->
+                <div id="clientAddress" formGroupName="clientAddress">
+
+                    <mat-form-field>
+                        <mat-label>Kraj</mat-label>
+                        <input matInput placeholder="Polska" formControlName="country" />
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.country')?.hasError('minlength')">
+                            Kraj musi mieć co najmniej 2 znaki
+                        </mat-error>
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.country')?.hasError('maxlength')">
+                            Kraj może mieć maksymalnie 100 znaków
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- Client administrative area form field -->
+                    <mat-form-field>
+                        <mat-label>Województwo</mat-label>
+                        <input matInput placeholder="Mazowieckie" formControlName="administrativeArea" />
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.administrativeArea')?.hasError('minlength')">
+                            Województwo musi mieć co najmniej 2 znaki
+                        </mat-error>
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.administrativeArea')?.hasError('maxlength')">
+                            Województwo może mieć maksymalnie 100 znaków
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- Client city form field -->
+                    <mat-form-field>
+                        <mat-label>Miasto</mat-label>
+                        <input matInput placeholder="Warszawa" formControlName="city" />
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.city')?.hasError('minlength')">
+                            Miasto musi mieć co najmniej 2 znaki
+                        </mat-error>
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.city')?.hasError('maxlength')">
+                            Miasto może mieć maksymalnie 100 znaków
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- Client postal code form field -->
+                    <mat-form-field>
+                        <mat-label>Kod pocztowy</mat-label>
+                        <input matInput placeholder="00-001" formControlName="postalCode" />
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.postalCode')?.hasError('minlength')">
+                            Kod pocztowy musi mieć co najmniej 2 znaków
+                        </mat-error>
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.postalCode')?.hasError('maxlength')">
+                            Kod pocztowy może mieć maksymalnie 100 znaków
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- Client street form field -->
+                    <mat-form-field>
+                        <mat-label>Ulica</mat-label>
+                        <input matInput placeholder="ul. Marszałkowska 1" formControlName="street" />
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.street')?.hasError('minlength')">
+                            Ulica musi mieć co najmniej 2 znaki
+                        </mat-error>
+                        <mat-error *ngIf="vehicleForm.get('clientAddress.street')?.hasError('maxlength')">
+                            Ulica może mieć maksymalnie 100 znaków
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- <button mat-flat-button [disabled]="vehicleForm.invalid" type="submit"> -->
+                <!-- EDYTUJ -->
+                <!-- </button> -->
+            </form>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <button mat-flat-button (click)="onCancel()">ANULUJ</button>
+            <button mat-flat-button [disabled]="vehicleForm.invalid" cdkFocusInitial (click)="onSubmit()">EDYTUJ</button>
+        </mat-dialog-actions>
+    </ng-container>
+</ng-container>

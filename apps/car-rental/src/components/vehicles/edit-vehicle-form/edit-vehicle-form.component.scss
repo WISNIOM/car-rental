@@ -1,0 +1,19 @@
+form {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+#clientAddress {
+  width: 100%;
+}
+
+.error {
+  color: red;
+  width: 300px;
+}

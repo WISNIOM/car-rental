@@ -199,7 +199,7 @@ export class VehiclesService {
         this.logger.log(
           `Client address exists. Updating client address with id ${id}`
         );
-        await this.addressesService.update(id, addressData);
+        clientAddress = await this.addressesService.update(id, addressData);
         this.logger.log(`Client address with id ${id} updated`);
       } else {
         this.logger.log(

@@ -134,14 +134,14 @@ describe('AddressesService', () => {
 
       const address = { id: 1, ...updateAddressDto };
       addressRepository.findOne.mockResolvedValue(address);
-      addressRepository.update.mockResolvedValue(address);
+      addressRepository.save.mockResolvedValue(address);
 
       const result = await service.update(1, updateAddressDto);
       expect(result).toEqual(address);
       expect(addressRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(addressRepository.update).toHaveBeenCalledWith(
+      expect(addressRepository.save).toHaveBeenCalledWith(
         1,
         updateAddressDto
       );

@@ -59,7 +59,10 @@ export class AddressesService {
     return result;
   }
 
-  async update(id: number, updateAddressDto: UpdateAddressDto): Promise<AddressDto> {
+  async update(
+    id: number,
+    updateAddressDto: UpdateAddressDto
+  ): Promise<AddressDto> {
     const addressToBeUpdated = await this.findOne(id);
     if (!addressToBeUpdated) {
       this.logger.error(`Address with id ${id} not found`);
@@ -72,7 +75,7 @@ export class AddressesService {
       );
     }
     this.logger.log(`Updating address with id ${id}`);
-    await this.addressesRepository.update(id, updateAddressDto);
+    await this.addressesRepository.save({ id, ...updateAddressDto });
     this.logger.log(`Address with id ${id} updated`);
     return this.findOne(id);
   }

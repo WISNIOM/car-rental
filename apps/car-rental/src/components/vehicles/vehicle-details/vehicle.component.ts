@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { VehiclesService } from '../../../../src/services/vehicles.service';
 import { NotificationService } from '../../../../src/services/notification.service';
 import { VehicleDto } from '../../../../src/dtos/vehicle';
@@ -15,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmVehicleRemovalComponent } from '../confirm-vehicle-removal/confirm-vehicle-removal.component';
+import { EditVehicleFormComponent } from '../edit-vehicle-form/edit-vehicle-form.component';
 
 @Component({
   selector: 'app-vehicle',
@@ -41,7 +41,6 @@ export class VehicleComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly vehiclesService: VehiclesService,
-    private readonly vehiclesBrandService: VehicleBrandsService,
     private readonly dialog: MatDialog,
     private readonly notificationService: NotificationService,
     private readonly router: Router
@@ -83,6 +82,19 @@ export class VehicleComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'vehicleRemoved') {
         this.goBackToTheVehiclesList();
+      }
+    });
+  }
+
+  openEditVehicleFormDialog(): void {
+    const dialogRef = this.dialog.open(EditVehicleFormComponent, {
+      width: '800px',
+      height: '600px',
+      data: this.vehicle,
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'vehicleEdited') {
+        this.loadVehicle();
       }
     });
   }

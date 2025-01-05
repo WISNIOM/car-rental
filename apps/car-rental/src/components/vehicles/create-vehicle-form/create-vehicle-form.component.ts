@@ -1,8 +1,6 @@
 import {
   Component,
-  EventEmitter,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -42,10 +40,9 @@ import { debounceTime, finalize, fromEvent, Subscription } from 'rxjs';
 })
 export class CreateVehicleFormComponent implements OnInit {
   @ViewChild('createVehicleBrandDropdown') brandDropdown!: MatSelect;
-  @Output() vehicleCreated = new EventEmitter<void>();
   vehicleForm: FormGroup;
   vehicleBrands: VehicleBrandDto[] = [];
-  currentPage = 1;
+  vehicleBrandsCurrentPage = 1;
   isLoading = false;
   error: { error: string; status: number } | null = null;
   private scrollSubscription?: Subscription;
@@ -99,10 +96,10 @@ export class CreateVehicleFormComponent implements OnInit {
 
   loadVehicleBrands(): void {
     this.vehiclesBrandService
-      .getVehicleBrands({ sortField: 'name', take: 10, page: this.currentPage })
+      .getVehicleBrands({ sortField: 'name', take: 10, page: this.vehicleBrandsCurrentPage })
       .subscribe((response) => {
         this.vehicleBrands = [...this.vehicleBrands, ...response.data];
-        this.currentPage++;
+        this.vehicleBrandsCurrentPage++;
       });
   }
 
@@ -116,11 +113,9 @@ export class CreateVehicleFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const { brand, registrationNumber, vehicleIdentificationNumber } =
-      this.vehicleForm.value;
     this.isLoading = true;
     this.vehiclesService
-      .createVehicle({ brand, registrationNumber, vehicleIdentificationNumber })
+      .createVehicle(this.vehicleForm.value)
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -128,7 +123,6 @@ export class CreateVehicleFormComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.vehicleCreated.emit();
           this.notificationService.showSuccess('Dodano pojazd.🥳');
           this.dialogRef.close('vehicleCreated');
         },
