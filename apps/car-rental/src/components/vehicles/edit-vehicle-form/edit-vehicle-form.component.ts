@@ -87,23 +87,23 @@ export class EditVehicleFormComponent implements OnInit {
       clientAddress: new FormGroup({
         country: new FormControl(
           this.vehicleCopy.clientAddress?.country || '',
-          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+          [Validators.minLength(2), Validators.maxLength(100)]
         ),
         administrativeArea: new FormControl(
           this.vehicleCopy.clientAddress?.administrativeArea || '',
-          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+          [Validators.minLength(2), Validators.maxLength(100)]
         ),
         city: new FormControl(
           this.vehicleCopy.clientAddress?.city || '', 
-          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+          [Validators.minLength(2), Validators.maxLength(100)]
         ),
         postalCode: new FormControl(
           this.vehicleCopy.clientAddress?.postalCode || '',
-          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+          [Validators.minLength(2), Validators.maxLength(100)]
         ),
         street: new FormControl(
           this.vehicleCopy.clientAddress?.street || '',
-          this.vehicleCopy.clientAddress ? [Validators.minLength(2), Validators.maxLength(100)]: []
+          [Validators.minLength(2), Validators.maxLength(100)]
         )
       }),
     });

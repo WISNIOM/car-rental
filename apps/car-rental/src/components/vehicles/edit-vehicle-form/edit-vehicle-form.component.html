@@ -157,7 +157,7 @@
                         <mat-label>Kod pocztowy</mat-label>
                         <input matInput placeholder="00-001" formControlName="postalCode" />
                         <mat-error *ngIf="vehicleForm.get('clientAddress.postalCode')?.hasError('minlength')">
-                            Kod pocztowy musi mieć co najmniej 2 znaków
+                            Kod pocztowy musi mieć co najmniej 2 znaki
                         </mat-error>
                         <mat-error *ngIf="vehicleForm.get('clientAddress.postalCode')?.hasError('maxlength')">
                             Kod pocztowy może mieć maksymalnie 100 znaków
@@ -175,9 +175,6 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
-                <!-- <button mat-flat-button [disabled]="vehicleForm.invalid" type="submit"> -->
-                <!-- EDYTUJ -->
-                <!-- </button> -->
             </form>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
