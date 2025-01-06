@@ -8,8 +8,8 @@
             <p>Czy na pewno chcesz usunąć pojazd o numerze rejestracyjnym: <strong>{{ vehicle.registrationNumber }}</strong>?</p>
         </mat-dialog-content>
         <mat-dialog-actions>
-            <button mat-button (click)="onCancel()">ANULUJ</button>
-            <button mat-button (click)="onConfirm()">USUŃ</button>
+            <button mat-button id="cancel" (click)="onCancel()">ANULUJ</button>
+            <button mat-button id="confirm" (click)="onConfirm()">USUŃ</button>
         </mat-dialog-actions>
     </ng-container>
 </ng-container>

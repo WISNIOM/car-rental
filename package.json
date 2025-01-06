@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "test:car-rental": "nx test car-rental",
+    "test:car-rental": "nx test car-rental ./src/components/vehicles/edit-vehicle-form/edit-vehicle-form.component.spec.ts",
     "test:car-rental-backend": "nx test car-rental-backend",
     "build:car-rental": "nx build car-rental",
     "build:car-rental-backend": "nx build car-rental-backend",

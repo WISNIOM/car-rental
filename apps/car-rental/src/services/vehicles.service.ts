@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { CreateVehicleDto, UpdateVehicleDto, VehicleDto } from '../dtos/vehicle';
 import { Page } from '../dtos/page';
 import { PageOptions } from '../dtos/page-options';
+import { environment } from '../environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VehiclesService {
-  private apiUrl = 'http://localhost:3000/api/vehicles';
+  private apiUrl = `${environment.API_URL}/vehicles`;
   constructor(private readonly http: HttpClient) {}
 
   getVehicles(opts: PageOptions = {}): Observable<Page<VehicleDto>> {

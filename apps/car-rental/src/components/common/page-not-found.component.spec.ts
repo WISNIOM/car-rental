@@ -1,21 +1,29 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { PageNotFoundComponent } from './page-not-found.component';
+import { CommonModule } from '@angular/common';
 
 describe('PageNotFoundComponent', () => {
-  let component: PageNotFoundComponent;
-  let fixture: ComponentFixture<PageNotFoundComponent>;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PageNotFoundComponent],
+      imports: [CommonModule, PageNotFoundComponent], // Import the standalone component
     }).compileComponents();
-
-    fixture = TestBed.createComponent(PageNotFoundComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
+    const fixture = TestBed.createComponent(PageNotFoundComponent);
+    const component = fixture.componentInstance;
     expect(component).toBeTruthy();
+  });
+
+  it('should render the correct content', () => {
+    const fixture = TestBed.createComponent(PageNotFoundComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h2')?.textContent).toContain(
+      'Page Not Found'
+    );
+    expect(compiled.querySelector('p')?.textContent).toContain(
+      "We couldn't find that page! Not even with x-ray vision."
+    );
   });
 });

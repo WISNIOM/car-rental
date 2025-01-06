@@ -18,6 +18,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
+import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { VehiclesService } from '../../../services/vehicles.service';
 import { VehicleDto } from '../../../dtos/vehicle';
@@ -26,13 +28,6 @@ import { CreateVehicleFormComponent } from '../create-vehicle-form/create-vehicl
 import { NotificationService } from '../../../../src/services/notification.service';
 import { VehicleBrandsService } from '../../../../src/services/vehicle-brands.service';
 import { Order } from '../../../../src/enums/order';
-import {
-  DoesContainOnlyDigitsAndUppercaseLettersDirective,
-  DoesNotContainPolishLettersDirective,
-  DoesNotContainSpecificLettersDirective,
-} from '../../../../src/validators/custom-validators';
-import { Router } from '@angular/router';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmVehicleRemovalComponent } from '../confirm-vehicle-removal/confirm-vehicle-removal.component';
 import { EditVehicleFormComponent } from '../edit-vehicle-form/edit-vehicle-form.component';
 
@@ -55,9 +50,6 @@ import { EditVehicleFormComponent } from '../edit-vehicle-form/edit-vehicle-form
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSortModule,
-    DoesContainOnlyDigitsAndUppercaseLettersDirective,
-    DoesNotContainPolishLettersDirective,
-    DoesNotContainSpecificLettersDirective,
   ],
   templateUrl: './vehicles-list.component.html',
   styleUrl: './vehicles-list.component.scss',
