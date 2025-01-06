@@ -28,4 +28,4 @@ jobs:
 
       # Run linting
       - name: Run lint, test and build
-        run: nx run-many --targets=lint,test,build
+        run: npx nx run-many --targets=lint,test,build
