@@ -1,82 +1,73 @@
 # CarRental
+## Docker Compose Setup
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+This project uses Docker Compose to manage the development environment. The setup includes three services: `db`, `backend`, and `frontend`.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+### Services
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+#### Database (`db`)
 
-## Finish your CI setup
+- **Image**: `mysql:8.0`
+- **Ports**: `3306:3306`
+- **Container Name**: `car_rental_db`
+- **Environment Variables**:
+    - `MYSQL_ROOT_PASSWORD`
+    - `MYSQL_DATABASE`
+    - `MYSQL_CHARSET`: `utf8mb4`
+    - `MYSQL_COLLATION`: `utf8mb4_unicode_ci`
+- **Volumes**:
+    - `./my.cnf:/etc/mysql/conf.d/my.cnf`
+    - `./mysql:/var/lib/mysql`
+    - `./scripts:/docker-entrypoint-initdb.d:ro`
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/kbaIff4u91)
+#### Backend (`backend`)
 
+- **Build Context**: `./apps/car-rental-backend`
+- **Dockerfile**: `./apps/car-rental-backend/Dockerfile`
+- **Command**: `npm run serve:car-rental-backend`
+- **Container Name**: `car_rental_backend`
+- **Expose**: `3000`
+- **Ports**: `3000:3000`
+- **Depends On**: `db`
+- **Environment Variables**:
+    - `DATABASE_HOST`: `db`
+    - `DATABASE_PORT`: `3306`
+    - `DATABASE_USER`
+    - `DATABASE_PASSWORD`
+    - `DATABASE_NAME`
+- **Volumes**:
+    - `.:/app`
+    - `/app/node_modules`
 
-## Run tasks
+#### Frontend (`frontend`)
 
-To run the dev server for your app, use:
+- **Build Context**: `./apps/car-rental`
+- **Dockerfile**: `./apps/car-rental/Dockerfile`
+- **Command**: `npm run serve:car-rental -- --host 0.0.0.0`
+- **Container Name**: `car_rental_frontend`
+- **Ports**: `4200:4200`
+- **Depends On**: `backend`
+- **Volumes**:
+    - `.:/app`
+    - `/app/node_modules`
+
+### Networks
+
+- **Default Network**: `car_rental_network`
+    - **Driver**: `bridge`
+
+### Usage
+
+To start the services, run:
 
 ```sh
-npx nx serve car-rental
+docker-compose up
 ```
 
-To create a production bundle:
+To stop the services, run:
 
 ```sh
-npx nx build car-rental
+docker-compose down
 ```
 
-To see all available targets to run for a project, run:
-
-```sh
-npx nx show project car-rental
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
-```
-
-To generate a new library, use:
-
-```sh
-npx nx g @nx/angular:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+For more information on Docker Compose, refer to the [official documentation](https://docs.docker.com/compose/).
