@@ -93,18 +93,18 @@ export class EditVehicleFormComponent implements OnInit {
           this.vehicleCopy.clientAddress?.administrativeArea || '',
           [Validators.minLength(2), Validators.maxLength(100)]
         ),
-        city: new FormControl(
-          this.vehicleCopy.clientAddress?.city || '', 
-          [Validators.minLength(2), Validators.maxLength(100)]
-        ),
+        city: new FormControl(this.vehicleCopy.clientAddress?.city || '', [
+          Validators.minLength(2),
+          Validators.maxLength(100),
+        ]),
         postalCode: new FormControl(
           this.vehicleCopy.clientAddress?.postalCode || '',
           [Validators.minLength(2), Validators.maxLength(100)]
         ),
-        street: new FormControl(
-          this.vehicleCopy.clientAddress?.street || '',
-          [Validators.minLength(2), Validators.maxLength(100)]
-        )
+        street: new FormControl(this.vehicleCopy.clientAddress?.street || '', [
+          Validators.minLength(2),
+          Validators.maxLength(100),
+        ]),
       }),
     });
   }
@@ -115,6 +115,7 @@ export class EditVehicleFormComponent implements OnInit {
 
   onDropdownOpened(isOpened: boolean): void {
     if (isOpened) {
+      this.onScroll();
       this.scrollSubscription = fromEvent(
         this.brandDropdown.panel.nativeElement,
         'scroll'
@@ -143,9 +144,23 @@ export class EditVehicleFormComponent implements OnInit {
         page: this.vehicleBrandsCurrentPage,
       })
       .subscribe((response) => {
-        this.vehicleBrands = [...this.vehicleBrands, ...response.data];
+        const filteredBrands = response.data.filter(
+          (brand) => brand.name !== this.vehicleForm.get('brand')?.value
+        );
+        this.vehicleBrands = [...this.vehicleBrands, ...filteredBrands].sort(
+          (brand1, brand2) => brand1.name.localeCompare(brand2.name)
+        );
+        this.ensureSelectedBrandIsVisible();
         this.vehicleBrandsCurrentPage++;
       });
+  }
+
+  ensureSelectedBrandIsVisible(): void {
+    const selectedBrand = this.vehicle.brand;
+    if (!this.vehicleBrands.some((brand) => brand.name === selectedBrand)) {
+      this.vehicleBrands.push({ name: selectedBrand } as VehicleBrandDto);
+    }
+    this.vehicleForm.get('brand')?.setValue(selectedBrand);
   }
 
   isClientAddressEmpty(clientAddress: CreateAddressDto): boolean {
@@ -154,15 +169,18 @@ export class EditVehicleFormComponent implements OnInit {
 
   onSubmit(): void {
     this.isLoading = true;
-    const { clientAddress, clientEmail, ...vehicleData } = this.vehicleForm.value;
-    if(this.vehicleCopy.clientAddress) {
-      if((this.vehicleCopy.clientAddress as AddressDto).id) {
+    const { clientAddress, clientEmail, ...vehicleData } =
+      this.vehicleForm.value;
+    if (this.vehicleCopy.clientAddress) {
+      if ((this.vehicleCopy.clientAddress as AddressDto).id) {
         clientAddress.id = (this.vehicleCopy.clientAddress as AddressDto).id;
       }
     }
     const updateVehicleData: UpdateVehicleDto = {
       ...vehicleData,
-      clientAddress: this.isClientAddressEmpty(clientAddress) ? undefined : clientAddress,
+      clientAddress: this.isClientAddressEmpty(clientAddress)
+        ? undefined
+        : clientAddress,
       clientEmail: !clientEmail ? undefined : clientEmail,
     };
     this.vehiclesService

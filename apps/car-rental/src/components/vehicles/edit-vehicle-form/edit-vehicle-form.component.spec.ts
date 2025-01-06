@@ -184,9 +184,24 @@ describe('EditVehicleFormComponent', () => {
     component.ngOnInit();
     expect(vehicleBrandsService.getVehicleBrands).toHaveBeenCalled();
     expect(component.vehicleBrands).toEqual([
+      { name: 'Honda' } as VehicleBrandDto,
+      { name: 'Toyota' } as VehicleBrandDto,
+    ]);
+  });
+
+  it('should ensure selected brand is visible', () => {
+    component.vehicleBrands = [
       { name: 'Toyota' } as VehicleBrandDto,
       { name: 'Honda' } as VehicleBrandDto,
+    ];
+    component.vehicle.brand = 'Opel';
+    component.ensureSelectedBrandIsVisible();
+    expect(component.vehicleBrands).toEqual([
+      { name: 'Toyota' } as VehicleBrandDto,
+      { name: 'Honda' } as VehicleBrandDto,
+      { name: 'Opel' } as VehicleBrandDto,
     ]);
+    expect(component.vehicleForm.get('brand')?.value).toBe('Opel');
   });
 
 });
