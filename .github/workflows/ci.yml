@@ -27,13 +27,5 @@ jobs:
       - run: npm ci --legacy-peer-deps
 
       # Run linting
-      - name: Run lint
-        run: npx nx affected --target=lint --parallel --no-cloud
-
-      # Run tests
-      - name: Run tests
-        run: npx nx affected --target=test --parallel --no-cloud
-
-      # Build all projects
-      - name: Build all projects
-        run: npx nx affected --target=build --parallel --no-cloud
+      - name: Run lint, test and build
+        run: nx run-many --targets=lint,test,build
